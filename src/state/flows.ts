@@ -13,9 +13,13 @@ export async function boot(): Promise<void> {
   store.profile = await loadAll(shadow);
   mode.value = store.profile.mode;
   shadow.head(MODES.find((m) => m.id === mode.value)!);
+  // first run: brand-new players go through onboarding; anyone with history skips it
+  const hasHistory = [...shadow.heads.values()].some((h) => h.moves > 0);
+  if (!store.profile.onboarded && hasHistory) store.profile.onboarded = true;
+  if (!store.profile.onboarded) screen.value = 'onboarding';
   ready.value = true;
   commit();
-  checkAway();
+  if (store.profile.onboarded) checkAway();
   setInterval(touchSeen, 30_000);
   document.addEventListener('visibilitychange', () => {
     if (document.hidden) touchSeen();
@@ -27,6 +31,7 @@ function touchSeen() { store.profile.lastSeen = Date.now(); commit(); }
 
 /** your shadow played while you were gone — show what happened */
 export function checkAway(): void {
+  if (screen.value === 'onboarding') return;
   const p = store.profile, now = Date.now();
   const mins = p.lastSeen ? (now - p.lastSeen) / 60000 : 0;
   p.lastSeen = now;

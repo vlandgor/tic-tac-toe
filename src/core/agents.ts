@@ -1,6 +1,6 @@
 import { MLP, sampleFrom } from './nn/mlp';
 import { fit } from './nn/train';
-import { ARCHETYPES, corpus, type StyleCfg } from './heuristic';
+import { ARCHETYPES, corpus, heuristicMove, type StyleCfg } from './heuristic';
 import type { Player, RuleSet, State } from './rules/types';
 import type { Shadow } from './shadow/shadow';
 
@@ -20,6 +20,14 @@ export class ShadowAgent implements Agent {
   constructor(private shadow: Shadow, name = 'SHADOW', private temp = 0.8) { this.name = name; }
   pick(rules: RuleSet, s: State, me: Player, t: number) { return this.shadow.sample(rules, s, me, t, this.temp); }
   thinkMs() { return this.shadow.thinkMs(); }
+}
+
+/** rule-based opponent with no model — used for the gentle first game */
+export class HeuristicAgent implements Agent {
+  readonly name: string;
+  constructor(name: string, private cfg: StyleCfg, private latency: [number, number] = [600, 1100]) { this.name = name; }
+  pick(rules: RuleSet, s: State, me: Player) { return heuristicMove(rules, s, me, this.cfg); }
+  thinkMs() { return this.latency[0] + Math.random() * (this.latency[1] - this.latency[0]); }
 }
 
 /* ------------------------------------------------------------------ */

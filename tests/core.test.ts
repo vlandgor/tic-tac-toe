@@ -173,3 +173,26 @@ describe('events', () => {
     expect(s.length).toBe(13);
   });
 });
+
+import { cleanName, validName, normalizeProfile } from '../src/core/profile';
+import { HeuristicAgent } from '../src/core/agents';
+
+describe('onboarding', () => {
+  it('cleans and validates names', () => {
+    expect(cleanName('vlad 99!')).toBe('VLAD99');
+    expect(cleanName('abcdefghijklmnop')).toBe('ABCDEFGHIJ');
+    expect(validName('A')).toBe(false);
+    expect(validName('AB')).toBe(true);
+  });
+  it('new players need onboarding; old saves do not', () => {
+    expect(normalizeProfile({}).onboarded).toBe(false);
+    expect(normalizeProfile({ name: 'VLAD' }).onboarded).toBe(true);
+    expect(normalizeProfile({ name: 'X', onboarded: false }).onboarded).toBe(false);
+  });
+  it('the guide only plays legal moves', () => {
+    const g = new HeuristicAgent('GUIDE', { finish: .9, block: .7, center: .5, corner: .5, noise: .25 });
+    let s = Classic.start();
+    let p: Player = 'O';
+    while (!Classic.terminal(s).over) { const mv = g.pick(Classic, s, p); expect(s.cells[mv]).toBeNull(); s = Classic.apply(s, mv, p); p = p === 'X' ? 'O' : 'X'; }
+  });
+});

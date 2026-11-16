@@ -17,7 +17,7 @@ export const store: { profile: Profile } = { profile: defaultProfile() };
 export const rev = signal(0);
 export const ready = signal(false);
 
-export type Screen = 'menu' | 'modes' | 'events' | 'shadow' | 'ranks' | 'search' | 'game';
+export type Screen = 'onboarding' | 'menu' | 'modes' | 'events' | 'shadow' | 'ranks' | 'search' | 'game';
 export const TAB_SCREENS: Screen[] = ['modes', 'events', 'menu', 'shadow', 'ranks'];
 export const screen = signal<Screen>('menu');
 
