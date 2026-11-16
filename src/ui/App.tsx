@@ -8,6 +8,7 @@ import { ShadowScreen } from './screens/ShadowScreen';
 import { Modes } from './screens/Modes';
 import { Events } from './screens/Events';
 import { Ranks } from './screens/Ranks';
+import { Onboarding } from './screens/Onboarding';
 import { Coach } from './overlays/Coach';
 import { Training } from './overlays/Training';
 import { Summary } from './overlays/Summary';
@@ -22,6 +23,7 @@ function Screen() {
     case 'modes': return <Modes />;
     case 'events': return <Events />;
     case 'ranks': return <Ranks />;
+    case 'onboarding': return <Onboarding />;
     default: return <Menu />;
   }
 }

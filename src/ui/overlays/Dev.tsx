@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { commit, rev, store } from '../../state/app';
+import { commit, rev, screen, store } from '../../state/app';
 import { resetRatings, resetShadow, simulateNow } from '../../state/flows';
 import { closeOverlay } from '../../state/overlays';
 
@@ -19,6 +19,7 @@ export function Dev() {
           IGNORE SHADOW GATE: {p.ignoreGate ? 'ON' : 'OFF'}
         </button>
         <button onClick={() => { resetRatings(); setMsg('RATINGS AND RIVAL POOL RESET'); }}>RESET RATINGS</button>
+        <button onClick={() => { closeOverlay(); screen.value = 'onboarding'; }}>REPLAY ONBOARDING</button>
         <button style={armed ? { color: 'var(--orange)' } : undefined} onClick={() => {
           if (!armed) { setArmed(true); setTimeout(() => setArmed(false), 3000); return; }
           setArmed(false); void resetShadow(); setMsg('SHADOW ERASED IN ALL MODES');

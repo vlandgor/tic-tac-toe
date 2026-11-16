@@ -196,3 +196,31 @@ svg.doom { opacity: .3; }
 .rk .t { font-size: 10px; letter-spacing: .16em; color: var(--ink2); margin-top: 4px; }
 .rk .num { font-size: 14px; color: var(--ink2); }
 .rk .rt { font-size: 17px; text-align: right; }
+
+/* ---------------- ONBOARDING ---------------- */
+.ob-dots { left: 0; right: 0; top: 56px; display: flex; justify-content: center; gap: 8px; }
+.ob-dots i { width: 18px; height: 3px; transition: background .3s; }
+.ob-title { font-size: 26px; letter-spacing: .14em; }
+.ob-body { font-size: 14px; letter-spacing: .12em; line-height: 28px; color: var(--ink); }
+.ob-btn { left: 36px; top: 712px; width: 348px; height: 66px; background: var(--orange); display: flex; align-items: center; justify-content: center; transition: opacity .2s; }
+.ob-btn span { font-size: 20px; letter-spacing: .34em; color: #000; text-indent: .34em; }
+.ob-btn:active { background: var(--orange-dk); }
+.ob-btn.off { opacity: .3; }
+.ob-input { left: 60px; top: 310px; width: 300px; height: 70px; background: none; border: 0; border-bottom: 1.5px solid var(--hair);
+  color: #fff; font-family: var(--font); font-size: 36px; letter-spacing: .18em; text-align: center; outline: none; text-transform: uppercase;
+  -webkit-user-select: text; user-select: text; border-radius: 0; }
+.ob-input:focus { border-bottom-color: var(--orange); }
+.ob-input::placeholder { color: rgba(255, 255, 255, .18); }
+.ob-logo { left: 135px; top: 150px; width: 150px; height: 150px; }
+.ob-logo .fg, .ob-logo .sh { position: absolute; inset: 0; }
+.ob-logo svg { width: 150px; height: 150px; }
+.ob-logo .sh { opacity: .5; animation: drift 3.2s ease-in-out infinite; }
+@keyframes drift { 0%, 100% { transform: translate(14px, 14px); } 50% { transform: translate(22px, 8px); } }
+.ob-prog { left: 60px; top: 372px; width: 300px; }
+.ob-prog .top { display: flex; justify-content: space-between; font-size: 11px; letter-spacing: .16em; color: var(--ink); margin-bottom: 12px; }
+.ob-prog .track { height: 3px; background: rgba(255, 255, 255, .12); }
+.ob-prog .fill { height: 3px; background: var(--orange); transition: width .8s ease-out; }
+.ob-verbs { left: 46px; top: 260px; width: 328px; }
+.ob-verbs div { padding: 18px 0; border-bottom: 1px solid var(--hair); display: flex; flex-direction: column; gap: 9px; }
+.ob-verbs b { font-weight: 400; font-size: 18px; letter-spacing: .24em; color: var(--orange); }
+.ob-verbs span { font-size: 12px; letter-spacing: .12em; color: var(--ink); }
