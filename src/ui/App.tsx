@@ -1,6 +1,8 @@
-import { ready, screen, session } from '../state/app';
+import { useRef } from 'preact/hooks';
+import { ready, screen, session, TAB_SCREENS, type Screen as ScreenId } from '../state/app';
 import { overlay } from '../state/overlays';
 import { Stage } from './components/Stage';
+import { BottomNav } from './components/BottomNav';
 import { Menu } from './screens/Menu';
 import { Search } from './screens/Search';
 import { Game } from './screens/Game';
@@ -40,10 +42,29 @@ function Overlay() {
   }
 }
 
+/** tabs slide in the direction you moved; game/search rise; everything else fades */
+function direction(from: ScreenId | null, to: ScreenId): string {
+  if (!from) return 'in-fade';
+  const a = TAB_SCREENS.indexOf(from), b = TAB_SCREENS.indexOf(to);
+  if (a >= 0 && b >= 0) return b > a ? 'in-r' : 'in-l';
+  if (to === 'game' || to === 'search') return 'in-up';
+  return 'in-fade';
+}
+
 export function App() {
+  const prev = useRef<ScreenId | null>(null);
+  const dir = useRef('in-fade');
+  const cur = screen.value;
+  if (prev.current !== cur) { dir.current = direction(prev.current, cur); prev.current = cur; }
+  const key = cur === 'game' ? 'game-' + (session.value?.id ?? 0) : cur;
+
   return (
     <Stage>
-      {ready.value ? <><Screen /><Overlay /></> : null}
+      {ready.value ? <>
+        <div class={'scr ' + dir.current} key={key}><Screen /></div>
+        {TAB_SCREENS.includes(cur) && <BottomNav />}
+        <Overlay />
+      </> : null}
     </Stage>
   );
 }

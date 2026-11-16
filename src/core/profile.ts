@@ -16,6 +16,8 @@ export interface AwayResult {
 
 export interface MiniScore { w: number; l: number; d: number; }
 
+export interface Settings { sound: boolean; haptics: boolean; }
+
 export interface DailyState { last: string | null; streak: number; best: number; }
 
 export interface GauntletMatch { stage: 'SEMIFINAL' | 'FINAL'; rival: string; score: string; won: boolean; }
@@ -38,6 +40,7 @@ export interface Profile {
   trophies: number;
   /** finished the first-run flow */
   onboarded: boolean;
+  settings: Settings;
   ignoreGate: boolean;
 }
 
@@ -47,7 +50,8 @@ export function defaultProfile(): Profile {
   for (const m of MODES) { rating[m.id] = START_RATING; lossQ[m.id] = []; }
   return { name: 'PLAYER', mode: 'classic', rating, rivals: makeRivals(), lastRival: null, lastSeen: 0,
            away: [], lossQ, mini: { w: 0, l: 0, d: 0 }, daily: { last: null, streak: 0, best: 0 },
-           gauntlet: null, trophies: 0, onboarded: false, ignoreGate: false };
+           gauntlet: null, trophies: 0, onboarded: false, settings: { sound: true, haptics: true },
+           ignoreGate: false };
 }
 
 /** fill gaps after loading an older save */

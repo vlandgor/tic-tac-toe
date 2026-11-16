@@ -6,18 +6,19 @@ import type { ModeId } from '../../core/rules/types';
 import { pct, type Ratio } from '../../core/shadow/shadow';
 import { isActive, mode, rev, shadow, store } from '../../state/app';
 import { coachLosses } from '../../state/flows';
-import { BottomNav } from '../components/BottomNav';
 import { COLORS } from '../components/Glyph';
+import { CountUp, useMounted } from '../feel/motion';
 
 const signed = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n);
 
 function Trait({ k, r }: { k: string; r: Ratio }) {
   const v = pct(r);
+  const mounted = useMounted(120);
   return (
     <div class="trait">
       <div class="top"><div class="k">{k}</div>
         <div class="v">{v === null ? <span style={{ color: 'var(--ink2)' }}>NO DATA</span> : v + '%'}</div></div>
-      <div class="track"><div class="fill" style={{ width: (v ?? 0) + '%' }} /></div>
+      <div class="track"><div class="fill" style={{ width: (mounted ? v ?? 0 : 0) + '%' }} /></div>
     </div>
   );
 }
@@ -47,15 +48,15 @@ export function ShadowScreen() {
       <div class="abs center" style={{ top: '90px', fontSize: '13px', letterSpacing: '.18em', color: active ? COLORS.X : 'var(--ink)' }}>
         {active ? 'IN MATCHMAKING · PLAYING AS YOU' : `LOCKED · ${gate.moves} / ${gate.need} MOVES${gate.needsStyle ? ' · NEEDS CHOICE MOVES' : ''}`}
       </div>
-      <div class="abs center h-fid" style={{ top: '118px' }}>{fid === null ? '—' : fid + '%'}</div>
+      <div class="abs center h-fid" style={{ top: '118px' }} key={r.id}>{fid === null ? '—' : <><CountUp to={fid} ms={800} />%</>}</div>
       <div class="abs center lbl" style={{ top: '214px' }}>STYLE FIDELITY</div>
       <div class="abs center h-note" style={{ top: '236px' }}>CHOICE MOVES ONLY · FORCED MOVES EXCLUDED</div>
 
       <div class="abs h-traits" style={{ top: '274px' }}>
-        <Trait k="OPENS CENTER" r={h.traits.centerOpen} />
-        <Trait k="PLAYS CORNERS" r={h.traits.corner} />
-        <Trait k="BLOCKS THREATS" r={h.traits.block} />
-        <Trait k="TAKES THE WIN" r={h.traits.finish} />
+        <Trait key={r.id + 'c'} k="OPENS CENTER" r={h.traits.centerOpen} />
+        <Trait key={r.id + 'k'} k="PLAYS CORNERS" r={h.traits.corner} />
+        <Trait key={r.id + 'b'} k="BLOCKS THREATS" r={h.traits.block} />
+        <Trait key={r.id + 'f'} k="TAKES THE WIN" r={h.traits.finish} />
       </div>
       <div class="abs h-stats" style={{ top: '488px' }}>
         <div class="st"><div class="v">{p.rating[r.id]}</div><div class="lbl2">RATING</div></div>
@@ -74,7 +75,7 @@ export function ShadowScreen() {
         {log.length ? log.map((a, i) => {
           const c = a.res === 'W' ? COLORS.X : a.res === 'L' ? COLORS.O : '#fff';
           return (
-            <div class="arow" key={i} style={{ height: '44px' }}>
+            <div class="arow stg" key={i} style={{ height: '44px', '--i': i } as any}>
               <div class="m">{modeById(a.mode).name}</div>
               <div style={{ color: c }}>{a.res} {a.score}</div>
               <div>{a.rival}</div>
@@ -87,7 +88,6 @@ export function ShadowScreen() {
           </div>
         )}
       </div>
-      <BottomNav />
     </div>
   );
 }

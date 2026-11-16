@@ -3,7 +3,6 @@ import { gateProgress } from '../../core/insight';
 import { isActive, rev, rules, screen, setMode, shadow, startSession, store } from '../../state/app';
 import { overlay } from '../../state/overlays';
 import { MiniBoard } from '../components/MiniBoard';
-import { BottomNav } from '../components/BottomNav';
 import { dailyDone, solveDaily } from '../../state/flows';
 
 export function Menu() {
@@ -60,7 +59,6 @@ export function Menu() {
         </button>
       </div>
 
-      <BottomNav />
     </div>
   );
 }

@@ -9,6 +9,8 @@ import { commit, isActive, rivalModels, rules, screen, shadow, startSession, sto
 import { closeOverlay, overlay, runCoach, runTraining, type SummaryRow } from '../../state/overlays';
 import { Board } from '../components/Board';
 import { COLORS } from '../components/Glyph';
+import { feel } from '../feel';
+import { CountUp } from '../feel/motion';
 
 const signed = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n);
 
@@ -27,6 +29,17 @@ export function Game({ sess }: { sess: Session }) {
   const style = useRef({ hits: 0, moves: 0 });
   const alive = useRef(true);
   useEffect(() => () => { alive.current = false; }, []);
+
+  /* ---------- feel: every placed mark, last-seconds ticks ---------- */
+  useEffect(() => {
+    if (m.lastMove < 0) return;
+    const who = m.s.cells[m.lastMove];
+    if (who) feel.place(who);
+  }, [m.s.ply, m.round]);
+
+  useEffect(() => {
+    if (!m.locked && !paused && left > 0 && left <= 5) feel.warn();
+  }, [left]);
 
   /* ---------- turn clock ---------- */
   useEffect(() => {
@@ -60,6 +73,8 @@ export function Game({ sess }: { sess: Session }) {
   /* ---------- round end ---------- */
   useEffect(() => {
     if (!m.terminal) return;
+    const w = m.terminal.winner;
+    setTimeout(() => (w === 'X' ? feel.win() : w === 'O' ? feel.lose() : feel.draw()), 160);
     shadow.games++;
     commit();
     const over = matchOver(m);
@@ -87,7 +102,7 @@ export function Game({ sess }: { sess: Session }) {
     const fid = shadow.fidelity(r.id), h = shadow.head(r);
     const rows: SummaryRow[] = [];
     if (over && delta !== null) {
-      rows.push({ k: `RATING · ${r.name}`, v: <>{p.rating[r.id]} <span style={{ color: delta > 0 ? COLORS.X : delta < 0 ? COLORS.O : '#fff' }}>{signed(delta)}</span></> });
+      rows.push({ k: `RATING · ${r.name}`, v: <><CountUp from={p.rating[r.id] - delta} to={p.rating[r.id]} ms={900} /> <span style={{ color: delta > 0 ? COLORS.X : delta < 0 ? COLORS.O : '#fff' }}>{signed(delta)}</span></> });
     }
     rows.push({ k: 'STYLE MOVES PREDICTED', v: style.current.moves ? `${style.current.hits} / ${style.current.moves}` : 'NONE THIS ROUND' });
     rows.push({ k: 'STYLE FIDELITY', v: fid === null ? 'CALIBRATING' : fid + '%' });
@@ -116,7 +131,11 @@ export function Game({ sess }: { sess: Session }) {
     if (!rec.forced) { style.current.moves++; style.current.hits += rec.hit; }
     commit();
     setM(play(m, i));
-    if (rec.hit && !rec.forced) { setPredCell(i); setTimeout(() => alive.current && setPredCell(-1), 900); }
+    if (rec.hit && !rec.forced) {
+      setPredCell(i);
+      setTimeout(() => feel.predicted(), 110);
+      setTimeout(() => alive.current && setPredCell(-1), 900);
+    }
   };
 
   const isX = m.turn === 'X';
@@ -139,19 +158,19 @@ export function Game({ sess }: { sess: Session }) {
         <div class="pl">
           <div class="nm" style={{ color: !live ? '#fff' : isX ? COLORS.X : 'var(--idle)' }}>{nameX}</div>
           <div class="tag">{rated ? `RATING ${p.rating[r.id]}` : 'YOU'}</div>
-          <div class="pips">{[0, 1, 2].map((i) => <i key={i} class="pip" style={{ background: i < m.score.X ? COLORS.X : 'var(--dim)' }} />)}</div>
+          <div class="pips">{[0, 1, 2].map((i) => <i key={i} class={'pip' + (i < m.score.X ? ' on' : '')} style={{ background: i < m.score.X ? COLORS.X : 'var(--dim)' }} />)}</div>
         </div>
         <div class="g-clock" style={{ color: live && left <= 5 ? color : 'var(--ink)' }}>0:{String(Math.max(0, left)).padStart(2, '0')}</div>
         <div class="pl r">
           <div class="nm" style={{ color: !live ? '#fff' : !isX ? COLORS.O : 'var(--idle)' }}>{nameO}</div>
           <div class="tag">{tagO}</div>
-          <div class="pips">{[0, 1, 2].map((i) => <i key={i} class="pip" style={{ background: i < m.score.O ? COLORS.O : 'var(--dim)' }} />)}</div>
+          <div class="pips">{[0, 1, 2].map((i) => <i key={i} class={'pip' + (i < m.score.O ? ' on' : '')} style={{ background: i < m.score.O ? COLORS.O : 'var(--dim)' }} />)}</div>
         </div>
       </div>
 
       <div class="hair" style={{ left: '28px', top: '214px', width: '364px', height: '2px' }} />
-      <div class="abs g-bar" style={{ width: (live ? (Math.max(0, left) / MATCH.turnSeconds) * 364 : 364) + 'px', background: color }} />
-      <div class="abs center g-turn">
+      <div class={'abs g-bar' + (live && !paused && left <= 5 ? ' warn' : '')} style={{ width: (live ? (Math.max(0, left) / MATCH.turnSeconds) * 364 : 364) + 'px', background: color }} />
+      <div class="abs center g-turn swap" key={`${m.turn}-${m.round}-${live}-${paused}`}>
         {!live ? '' : paused ? <b style={{ fontWeight: 400, color: '#fff' }}>PAUSED</b>
           : <><b style={{ fontWeight: 400, color }}>{isX ? nameX : nameO}</b>&nbsp;&nbsp;TO MOVE</>}
       </div>
