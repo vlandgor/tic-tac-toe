@@ -1,10 +1,12 @@
 import { awayMatchesFor, simulateAway } from '../core/away';
+import { completeDaily, dailyPuzzle, dayKey, featuredMode, runGauntlet, weekKey } from '../core/events';
+import type { GauntletResult } from '../core/profile';
 import { MODES } from '../core/rules/modes';
 import { makeRivals, START_RATING } from '../core/rating';
 import type { CoachItem } from '../core/shadow/coach';
 import { loadAll, wipeShadow } from '../storage/persist';
 import { commit, isActive, mode, ready, rivalModels, screen, shadow, store } from './app';
-import { overlay, runCoach, runTrainingMany } from './overlays';
+import { overlay, runCoach, runTraining, runTrainingMany } from './overlays';
 
 /* ---------- boot ---------- */
 export async function boot(): Promise<void> {
@@ -80,4 +82,29 @@ export function resetRatings(): void {
   store.profile.away = [];
   rivalModels.clear();
   commit();
+}
+
+/* ---------- events ---------- */
+export const dailyDone = () => store.profile.daily.last === dayKey();
+
+/** one position a day — answering trains your shadow and keeps the streak */
+export async function solveDaily(): Promise<void> {
+  const day = dayKey();
+  if (store.profile.daily.last === day) return;
+  const pz = dailyPuzzle(day);
+  const guess = shadow.info(pz.rules, pz.s, 'X', 1).best;
+  const r = await runCoach([{ rules: pz.rules, s: pz.s, ref: guess, kind: 'daily',
+    onAnswer: () => completeDaily(store.profile, day) }]);
+  commit();
+  if (r.answered) await runTraining(pz.rules);
+}
+
+/** null if your shadow isn't active in this week's mode yet */
+export function enterGauntlet(): GauntletResult | null {
+  const week = weekKey(), p = store.profile;
+  if (p.gauntlet?.week === week) return p.gauntlet;
+  if (!isActive(featuredMode(week))) return null;
+  const res = runGauntlet(shadow, p, rivalModels, week);
+  commit();
+  return res;
 }

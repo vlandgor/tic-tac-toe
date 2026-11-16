@@ -42,3 +42,13 @@ export function matchmake(rivals: RivalProfile[], mode: ModeId, myRating: number
     .sort((a, b) => Math.abs(a.rating[mode] - myRating) - Math.abs(b.rating[mode] - myRating));
   return pick(pool.slice(0, 3));
 }
+
+export interface Standing { name: string; tag: string; rating: number; you: boolean; }
+
+/** leaderboard for one mode: the player plus the rival pool */
+export function standings(rivals: RivalProfile[], mode: ModeId, me: { name: string; rating: number }): Standing[] {
+  return [
+    { name: me.name, tag: 'YOU', rating: me.rating, you: true },
+    ...rivals.map((r) => ({ name: r.name, tag: ARCHETYPES[r.arch].tag, rating: r.rating[mode], you: false })),
+  ].sort((a, b) => b.rating - a.rating || (a.you ? -1 : 1));
+}

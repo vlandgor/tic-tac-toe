@@ -24,21 +24,23 @@ export const ARCHETYPES: readonly Archetype[] = [
 /** generic human-ish policy used for the shadow's cold-start prior */
 export const GENERIC_CFG: StyleCfg = { finish: .85, block: .8, center: .6, corner: .6, noise: .15 };
 
-export const pick = <T>(a: readonly T[]): T => a[(Math.random() * a.length) | 0];
+export const pick = <T>(a: readonly T[], rnd: () => number = Math.random): T => a[(rnd() * a.length) | 0];
 
-export function heuristicMove(rules: RuleSet, s: Parameters<RuleSet['legal']>[0], me: Player, cfg: StyleCfg): number {
+export function heuristicMove(
+  rules: RuleSet, s: Parameters<RuleSet['legal']>[0], me: Player, cfg: StyleCfg, rnd: () => number = Math.random,
+): number {
   const legal = rules.legal(s);
   if (!legal.length) return -1;
-  if (Math.random() < cfg.noise) return pick(legal);
+  if (rnd() < cfg.noise) return pick(legal, rnd);
   const t = tactics(rules, s, me);
-  if (t.wins.length && Math.random() < cfg.finish) return pick(t.wins);
-  if (t.blocks.length && Math.random() < cfg.block) return pick(t.blocks);
-  const pool = t.safe.length && Math.random() < cfg.finish ? t.safe : legal;
-  if (pool.includes(4) && Math.random() < cfg.center) return 4;
+  if (t.wins.length && rnd() < cfg.finish) return pick(t.wins, rnd);
+  if (t.blocks.length && rnd() < cfg.block) return pick(t.blocks, rnd);
+  const pool = t.safe.length && rnd() < cfg.finish ? t.safe : legal;
+  if (pool.includes(4) && rnd() < cfg.center) return 4;
   const corners = pool.filter(isCorner), edges = pool.filter(isEdge);
-  if (corners.length && Math.random() < cfg.corner) return pick(corners);
-  if (edges.length && Math.random() < 0.75) return pick(edges);
-  return pick(pool);
+  if (corners.length && rnd() < cfg.corner) return pick(corners, rnd);
+  if (edges.length && rnd() < 0.75) return pick(edges, rnd);
+  return pick(pool, rnd);
 }
 
 /** self-play games of a style, recorded from both sides' point of view */

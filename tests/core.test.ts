@@ -116,3 +116,60 @@ describe('match + away', () => {
     expect(awayMatchesFor(10000)).toBe(6);
   });
 });
+
+import { mulberry32, seeded } from '../src/core/rng';
+import { dailyPuzzle, completeDaily, dayKey, weekKey, yesterday, runGauntlet, featuredMode } from '../src/core/events';
+import { standings } from '../src/core/rating';
+
+describe('rng', () => {
+  it('is deterministic per seed', () => {
+    const a = mulberry32(42), b = mulberry32(42);
+    for (let i = 0; i < 5; i++) expect(a()).toBe(b());
+    expect(seeded('x')()).toBe(seeded('x')());
+    expect(seeded('x')()).not.toBe(seeded('y')());
+  });
+});
+
+describe('events', () => {
+  it('daily puzzle is the same for a day and is a real choice for X', () => {
+    for (const day of ['2026-11-15', '2026-11-16', '2026-12-01', '2027-01-07']) {
+      const a = dailyPuzzle(day), b = dailyPuzzle(day);
+      expect(a.rules.id).toBe(b.rules.id);
+      expect(a.s.cells).toEqual(b.s.cells);
+      expect(a.rules.terminal(a.s).over).toBe(false);
+      expect(tactics(a.rules, a.s, 'X').forced).toBe(false);
+      // X to move: counts consistent with alternating play
+      const x = a.s.cells.filter((c) => c === 'X').length, o = a.s.cells.filter((c) => c === 'O').length;
+      if (a.rules.id !== 'vanish') expect(x === o || x === o - 1).toBe(true);
+    }
+  });
+  it('streak grows on consecutive days and resets after a gap', () => {
+    const p = defaultProfile();
+    completeDaily(p, '2026-11-14'); completeDaily(p, '2026-11-15');
+    expect(p.daily.streak).toBe(2);
+    completeDaily(p, '2026-11-15');
+    expect(p.daily.streak).toBe(2);
+    completeDaily(p, '2026-11-18');
+    expect(p.daily.streak).toBe(1);
+    expect(p.daily.best).toBe(2);
+  });
+  it('calendar helpers', () => {
+    expect(yesterday('2026-03-01')).toBe('2026-02-28');
+    expect(dayKey(new Date(2026, 0, 5))).toBe('2026-01-05');
+    expect(weekKey(new Date(2026, 0, 1))).toBe('2026-W01');
+  });
+  it('gauntlet produces a consistent bracket', () => {
+    const sh = new Shadow(), p = defaultProfile();
+    const r = runGauntlet(sh, p, new RivalModels(), '2026-W46');
+    expect(r.mode).toBe(featuredMode('2026-W46').id);
+    expect(r.matches[0].stage).toBe('SEMIFINAL');
+    if (r.placement === 3) expect(r.matches.length).toBe(1);
+    else expect(r.matches[1].stage).toBe('FINAL');
+    expect(p.trophies).toBe(r.placement === 1 ? 1 : 0);
+  });
+  it('standings are sorted and include the player', () => {
+    const s = standings(makeRivals(), 'classic', { name: 'VLAD', rating: 5000 });
+    expect(s[0]).toMatchObject({ name: 'VLAD', you: true });
+    expect(s.length).toBe(13);
+  });
+});

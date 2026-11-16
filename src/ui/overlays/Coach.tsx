@@ -38,7 +38,7 @@ export function Coach({ items, resolve }: { items: CoachItem[]; resolve: (r: Coa
 
   return (
     <div class="ov" style={{ zIndex: 45 }}>
-      <div class="abs center c-top">{it.kind === 'loss' ? 'YOUR SHADOW LOST FROM HERE' : 'COACH YOUR SHADOW'}</div>
+      <div class="abs center c-top">{it.kind === 'loss' ? 'YOUR SHADOW LOST FROM HERE' : it.kind === 'daily' ? 'DAILY PUZZLE' : 'COACH YOUR SHADOW'}</div>
       <div class="abs center c-q">WHAT WOULD YOU PLAY?</div>
       <div class="abs center c-count lbl2">{it.rules.name}&nbsp;&nbsp;·&nbsp;&nbsp;{k + 1} / {items.length}</div>
       <Board key={k} rules={it.rules} s={shown} cell={90} mark={52} overhang={7}
@@ -46,7 +46,9 @@ export function Coach({ items, resolve }: { items: CoachItem[]; resolve: (r: Coa
              decorate={(i) => (answer >= 0 && !same && i === it.ref ? <i class="guess" /> : null)} />
       <div class="abs center c-fb" style={{ color: fbColor }}>{fb}</div>
       <div class="abs c-why">
-        {it.kind === 'loss' ? 'IT WAS PLAYING AS YOU AND LOST THE ROUND' : 'YOUR SHADOW IS UNSURE ABOUT YOU HERE'}
+        {it.kind === 'loss' ? 'IT WAS PLAYING AS YOU AND LOST THE ROUND'
+          : it.kind === 'daily' ? 'ONE POSITION A DAY · IT TRAINS YOUR SHADOW'
+          : 'YOUR SHADOW IS UNSURE ABOUT YOU HERE'}
         <br />YOU ARE ORANGE · YOUR MOVE
       </div>
       <button class="tbtn" style={{ bottom: '110px', fontSize: '14px' }} onClick={() => finish()}>SKIP</button>

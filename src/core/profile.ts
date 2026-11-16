@@ -16,6 +16,11 @@ export interface AwayResult {
 
 export interface MiniScore { w: number; l: number; d: number; }
 
+export interface DailyState { last: string | null; streak: number; best: number; }
+
+export interface GauntletMatch { stage: 'SEMIFINAL' | 'FINAL'; rival: string; score: string; won: boolean; }
+export interface GauntletResult { week: string; mode: ModeId; placement: 1 | 2 | 3; matches: GauntletMatch[]; }
+
 /** Everything about the player that isn't the shadow model itself. */
 export interface Profile {
   name: string;
@@ -28,6 +33,9 @@ export interface Profile {
   away: AwayResult[];
   lossQ: Record<ModeId, LossPosition[]>;
   mini: MiniScore;
+  daily: DailyState;
+  gauntlet: GauntletResult | null;
+  trophies: number;
   ignoreGate: boolean;
 }
 
@@ -36,7 +44,8 @@ export function defaultProfile(): Profile {
   const lossQ = {} as Record<ModeId, LossPosition[]>;
   for (const m of MODES) { rating[m.id] = START_RATING; lossQ[m.id] = []; }
   return { name: 'VLAD', mode: 'classic', rating, rivals: makeRivals(), lastRival: null, lastSeen: 0,
-           away: [], lossQ, mini: { w: 0, l: 0, d: 0 }, ignoreGate: false };
+           away: [], lossQ, mini: { w: 0, l: 0, d: 0 }, daily: { last: null, streak: 0, best: 0 },
+           gauntlet: null, trophies: 0, ignoreGate: false };
 }
 
 /** fill gaps after loading an older save */

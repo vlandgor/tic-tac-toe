@@ -87,9 +87,11 @@ svg.doom { opacity: .3; }
 .m-sub button { flex: 1; height: 52px; font-size: 14px; letter-spacing: .16em; color: var(--ink); }
 .m-sub .sep { width: 1px; height: 20px; background: var(--hair); }
 .nav { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; border-top: 1px solid var(--hair); }
-.tab { height: 84px; display: flex; align-items: center; justify-content: center; position: relative; }
-.tab svg { width: 26px; height: 26px; }
-.tab.act::after { content: ''; position: absolute; bottom: 18px; width: 5px; height: 5px; background: var(--orange); }
+.nav { background: #000; z-index: 5; }
+.tab { height: 84px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative; }
+.tab svg { width: 24px; height: 24px; }
+.tab .tl { font-size: 10px; letter-spacing: .16em; }
+.tab.act::before { content: ''; position: absolute; top: -1px; width: 28px; height: 2px; background: var(--orange); }
 
 /* ---------------- SEARCH ---------------- */
 .s-mode { top: 250px; }
@@ -167,3 +169,30 @@ svg.doom { opacity: .3; }
 .d-list { left: 36px; top: 250px; width: 348px; }
 .d-list button { display: block; width: 100%; height: 60px; border-bottom: 1px solid var(--hair); font-size: 14px; letter-spacing: .14em; text-align: left; }
 .d-msg { left: 36px; right: 36px; top: 560px; text-align: center; font-size: 13px; letter-spacing: .1em; color: var(--blue); line-height: 22px; }
+
+/* ---------------- TAB PAGES ---------------- */
+.p-head { top: 50px; font-size: 18px; letter-spacing: .3em; text-indent: .3em; }
+.p-sub { top: 82px; }
+.card { position: absolute; left: 28px; width: 364px; border: 1px solid var(--hair); text-align: left; }
+.card.sel { border: 1.5px solid var(--orange); }
+.card:active { background: rgba(255, 255, 255, .03); }
+.card .ct { position: absolute; left: 20px; top: 20px; font-size: 20px; letter-spacing: .12em; }
+.card .cs { position: absolute; left: 20px; top: 56px; font-size: 12px; letter-spacing: .14em; color: var(--ink2); }
+.card .cr { position: absolute; right: 20px; top: 24px; font-size: 13px; letter-spacing: .14em; color: var(--ink); text-align: right; }
+.card .cx { position: absolute; left: 20px; bottom: 18px; font-size: 14px; letter-spacing: .16em; }
+.card .stats3 { position: absolute; left: 20px; right: 20px; bottom: 16px; display: grid; grid-template-columns: repeat(3, 1fr); }
+.card .stats3 .v { font-size: 18px; letter-spacing: .04em; }
+.card .stats3 .lbl2 { font-size: 10px; letter-spacing: .16em; margin-top: 7px; }
+.card .row { display: grid; grid-template-columns: 104px 76px 1fr; font-size: 14px; letter-spacing: .08em; height: 30px; align-items: center; }
+.card .row .m { font-size: 11px; letter-spacing: .14em; color: var(--ink2); }
+.selrow { left: 36px; width: 348px; height: 52px; display: flex; align-items: center; }
+.selrow .arr { width: 52px; height: 52px; display: flex; align-items: center; justify-content: center; opacity: .85; }
+.selrow .mid { flex: 1; text-align: center; font-size: 17px; letter-spacing: .22em; text-indent: .22em; }
+.rk-head { left: 36px; width: 348px; display: grid; grid-template-columns: 40px 1fr 70px; }
+.rk { left: 28px; width: 364px; }
+.rk .r { height: 46px; display: grid; grid-template-columns: 48px 1fr 70px; align-items: center; padding: 0 8px; border-bottom: 1px solid rgba(255,255,255,.08); }
+.rk .r.you { background: rgba(255, 90, 30, .08); }
+.rk .n { font-size: 16px; letter-spacing: .12em; }
+.rk .t { font-size: 10px; letter-spacing: .16em; color: var(--ink2); margin-top: 4px; }
+.rk .num { font-size: 14px; color: var(--ink2); }
+.rk .rt { font-size: 17px; text-align: right; }

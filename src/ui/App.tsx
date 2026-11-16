@@ -5,6 +5,9 @@ import { Menu } from './screens/Menu';
 import { Search } from './screens/Search';
 import { Game } from './screens/Game';
 import { ShadowScreen } from './screens/ShadowScreen';
+import { Modes } from './screens/Modes';
+import { Events } from './screens/Events';
+import { Ranks } from './screens/Ranks';
 import { Coach } from './overlays/Coach';
 import { Training } from './overlays/Training';
 import { Summary } from './overlays/Summary';
@@ -16,6 +19,9 @@ function Screen() {
     case 'search': return <Search />;
     case 'game': return session.value ? <Game key={session.value.id} sess={session.value} /> : <Menu />;
     case 'shadow': return <ShadowScreen />;
+    case 'modes': return <Modes />;
+    case 'events': return <Events />;
+    case 'ranks': return <Ranks />;
     default: return <Menu />;
   }
 }

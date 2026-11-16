@@ -9,7 +9,7 @@ export interface CoachItem {
   s: State;
   /** the cell to reveal after answering: shadow's guess, or what it actually played */
   ref: number;
-  kind: 'unsure' | 'loss';
+  kind: 'unsure' | 'loss' | 'daily';
   onAnswer?: () => void;
 }
 
