@@ -3,7 +3,6 @@ import { MODES } from '../../core/rules/modes';
 import { standings } from '../../core/rating';
 import type { ModeId } from '../../core/rules/types';
 import { mode, rev, store } from '../../state/app';
-import { BottomNav } from '../components/BottomNav';
 import { COLORS } from '../components/Glyph';
 
 /** Per-mode leaderboard. Today: you + the rival pool. With a backend: real players. */
@@ -30,9 +29,9 @@ export function Ranks() {
       <div class="abs rk-head lbl2" style={{ top: '150px', fontSize: '11px' }}>
         <div>#</div><div>SHADOW</div><div style={{ textAlign: 'right' }}>RATING</div>
       </div>
-      <div class="abs rk" style={{ top: '172px' }}>
+      <div class="abs rk" style={{ top: '172px' }} key={view}>
         {list.map((s, i) => (
-          <div class={'r' + (s.you ? ' you' : '')} key={s.name}>
+          <div class={'r stg' + (s.you ? ' you' : '')} key={s.name} style={{ '--i': i * 0.4 } as any}>
             <div class="num" style={s.you ? { color: COLORS.X } : undefined}>{i + 1}</div>
             <div>
               <div class="n" style={s.you ? { color: COLORS.X } : undefined}>{s.name}</div>
@@ -42,7 +41,6 @@ export function Ranks() {
           </div>
         ))}
       </div>
-      <BottomNav />
     </div>
   );
 }

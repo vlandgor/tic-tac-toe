@@ -9,6 +9,8 @@ import { commit, screen, shadow, store } from '../../state/app';
 import { runCoach, runTraining } from '../../state/overlays';
 import { Board } from '../components/Board';
 import { COLORS, Glyph } from '../components/Glyph';
+import { feel } from '../feel';
+import { CountUp, useMounted } from '../feel/motion';
 
 type Step = 'welcome' | 'name' | 'game' | 'learned' | 'coach' | 'ready';
 const STEPS: Step[] = ['welcome', 'name', 'game', 'learned', 'coach', 'ready'];
@@ -57,8 +59,10 @@ function FirstGame({ onDone }: { onDone: () => void }) {
     const n = Classic.apply(cur, i, p);
     const t = Classic.terminal(n);
     setS(n); setLast(i);
+    feel.place(p);
     if (t.over) {
       setTerm(t);
+      setTimeout(() => (t.winner === 'X' ? feel.win() : t.winner === 'O' ? feel.lose() : feel.draw()), 160);
       shadow.games++;
       commit();
       setTimeout(async () => { await runTraining(Classic); if (alive.current) onDone(); }, 1500);
@@ -79,6 +83,7 @@ function FirstGame({ onDone }: { onDone: () => void }) {
     const r = shadow.record(Classic, s, 'X', 1, i, Date.now() - moveStart.current);
     commit();
     setFb(r.forced ? 'forced' : r.hit ? 'hit' : 'miss');
+    if (!r.forced) setTimeout(() => (r.hit ? feel.predicted() : feel.miss()), 110);
     if (r.hit && !r.forced) { setPred(i); setTimeout(() => alive.current && setPred(-1), 1000); }
     place(s, i, 'X');
   };
@@ -97,8 +102,8 @@ function FirstGame({ onDone }: { onDone: () => void }) {
       <Board rules={Classic} s={s} cell={110} mark={64} overhang={16} left={45} top={250}
              newIdx={last} hint={!term && turn === 'X' ? 'X' : null} terminal={term} showWinLine onTap={tap}
              decorate={(i) => <i class={'pred' + (pred === i ? ' on' : '')} />} />
-      <div class="abs center" style={{ top: '622px', fontSize: '16px', letterSpacing: '.16em', color }}>{title}</div>
-      <div class="abs center lbl2" style={{ top: '656px' }}>{sub}</div>
+      <div class="abs center swap" key={title} style={{ top: '622px', fontSize: '16px', letterSpacing: '.16em', color }}>{title}</div>
+      <div class="abs center lbl2 swap" key={sub} style={{ top: '656px' }}>{sub}</div>
     </>
   );
 }
@@ -120,10 +125,12 @@ export function Onboarding() {
 
   const h = shadow.head(Classic);
   const need = SHADOW_LIMITS.gateMoves;
+  const mounted = useMounted(250);
 
   return (
     <div class="screen">
       <Dots step={step} />
+      <div class="scr in-r" key={step}>
 
       {step === 'welcome' && <>
         <div class="abs ob-logo">
@@ -153,11 +160,11 @@ export function Onboarding() {
 
       {step === 'learned' && <>
         <div class="abs center ob-title" style={{ top: '150px' }}>IT LEARNED FROM YOU</div>
-        <div class="abs center" style={{ top: '214px', fontSize: '84px', lineHeight: '84px', color: COLORS.X }}>{h.moves}</div>
+        <div class="abs center" style={{ top: '214px', fontSize: '84px', lineHeight: '84px', color: COLORS.X }}><CountUp to={h.moves} ms={900} /></div>
         <div class="abs center lbl" style={{ top: '312px' }}>MOVES LEARNED</div>
         <div class="abs ob-prog">
           <div class="top"><span>UNLOCKS AT {need} MOVES</span><span>{Math.min(h.moves, need)} / {need}</span></div>
-          <div class="track"><div class="fill" style={{ width: Math.min(100, (h.moves / need) * 100) + '%' }} /></div>
+          <div class="track"><div class="fill" style={{ width: (mounted ? Math.min(100, (h.moves / need) * 100) : 0) + '%' }} /></div>
         </div>
         <div class="abs center ob-body" style={{ top: '462px' }}>
           ONCE UNLOCKED, IT ENTERS RANKED<br />
@@ -198,6 +205,7 @@ export function Onboarding() {
         <div class="abs center lbl2" style={{ top: '590px', fontSize: '11px' }}>A NEW PUZZLE EVERY DAY IN EVENTS</div>
         <Primary label="START" onClick={finish} />
       </>}
+      </div>
     </div>
   );
 }

@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { other, type Player, type RuleSet, type State, type Terminal } from '../../core/rules/types';
 import { commit, screen, shadow, store } from '../../state/app';
 import { Board } from './Board';
+import { feel } from '../feel';
 
 /** Casual endless games vs your shadow on the menu. Inference only: never records, never trains. */
 export function MiniBoard({ rules }: { rules: RuleSet }) {
@@ -29,8 +30,10 @@ export function MiniBoard({ rules }: { rules: RuleSet }) {
     const n = rules.apply(cur, i, p);
     const t = rules.terminal(n);
     setS(n); setLast(i);
+    feel.place(p, true);
     if (t.over) {
       setTerm(t);
+      setTimeout(() => (t.winner === 'X' ? feel.win(true) : t.winner === 'O' ? feel.lose(true) : feel.draw(true)), 150);
       const sc = store.profile.mini;
       if (t.winner === 'X') sc.w++; else if (t.winner === 'O') sc.l++; else sc.d++;
       commit();

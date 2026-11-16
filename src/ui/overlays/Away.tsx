@@ -3,7 +3,10 @@ import { modeById } from '../../core/rules/modes';
 import { store } from '../../state/app';
 import { coachLosses } from '../../state/flows';
 import { closeOverlay } from '../../state/overlays';
+import { useEffect } from 'preact/hooks';
 import { COLORS } from '../components/Glyph';
+import { feel } from '../feel';
+import { CountUp } from '../feel/motion';
 
 const signed = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n);
 const resColor = (r: AwayResult['res']) => (r === 'W' ? COLORS.X : r === 'L' ? COLORS.O : '#fff');
@@ -15,16 +18,17 @@ export function Away({ results }: { results: AwayResult[] }) {
   const w = results.filter((r) => r.res === 'W').length, l = results.filter((r) => r.res === 'L').length;
   const modes = [...new Set(results.map((r) => r.mode))];
   const losses = lossCount(p);
+  useEffect(() => { setTimeout(() => feel.reveal(total > 0 ? true : total < 0 ? false : null), 350); }, []);
 
   return (
     <div class="ov" style={{ zIndex: 42 }}>
       <div class="abs center a-title">WHILE YOU WERE AWAY</div>
       <div class="abs center a-sub">YOUR SHADOW PLAYED {results.length} MATCH{results.length > 1 ? 'ES' : ''}&nbsp;&nbsp;·&nbsp;&nbsp;{w}W {l}L</div>
-      <div class="abs center a-delta" style={{ color: total > 0 ? COLORS.X : total < 0 ? COLORS.O : '#fff' }}>{signed(total)}</div>
+      <div class="abs center a-delta" style={{ color: total > 0 ? COLORS.X : total < 0 ? COLORS.O : '#fff' }}><CountUp to={total} ms={1000} signed /></div>
       <div class="abs center a-rating lbl">{modes.map((id) => `${modeById(id).name} ${p.rating[id]}`).join('   ·   ')}</div>
       <div class="abs rows" style={{ top: '340px' }}>
         {results.slice(0, 6).map((r, i) => (
-          <div class="arow" key={i}>
+          <div class="arow stg" style={{ '--i': i + 2 } as any} key={i}>
             <div class="m">{modeById(r.mode).name}</div>
             <div style={{ color: resColor(r.res) }}>{r.res} {r.score}</div>
             <div>{r.rival}</div>

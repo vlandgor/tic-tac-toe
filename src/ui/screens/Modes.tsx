@@ -3,7 +3,6 @@ import { gateProgress } from '../../core/insight';
 import type { ModeId, Player, RuleSet, State } from '../../core/rules/types';
 import { isActive, mode, rev, screen, setMode, shadow, store } from '../../state/app';
 import { Board } from '../components/Board';
-import { BottomNav } from '../components/BottomNav';
 
 /** a tiny frozen board that shows each rule at a glance */
 function demo(rules: RuleSet, moves: [number, Player][]): State {
@@ -29,8 +28,8 @@ export function Modes() {
         const h = shadow.peek(r.id), fid = shadow.fidelity(r.id), g = gateProgress(h), act = isActive(r);
         const s = DEMOS[r.id], t = r.terminal(s);
         return (
-          <button key={r.id} class={'card' + (mode.value === r.id ? ' sel' : '')}
-                  style={{ top: 120 + idx * 196 + 'px', height: '180px' }}
+          <button key={r.id} class={'card stg' + (mode.value === r.id ? ' sel' : '')}
+                  style={{ top: 120 + idx * 196 + 'px', height: '180px', '--i': idx } as any}
                   onClick={() => { setMode(r.id); screen.value = 'menu'; }}>
             <div class="ct">{r.name}</div>
             <div class="cs" style={{ width: '220px', lineHeight: '18px' }}>{r.blurb}</div>
@@ -45,7 +44,6 @@ export function Modes() {
           </button>
         );
       })}
-      <BottomNav />
     </div>
   );
 }

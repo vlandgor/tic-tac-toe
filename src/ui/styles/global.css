@@ -224,3 +224,62 @@ svg.doom { opacity: .3; }
 .ob-verbs div { padding: 18px 0; border-bottom: 1px solid var(--hair); display: flex; flex-direction: column; gap: 9px; }
 .ob-verbs b { font-weight: 400; font-size: 18px; letter-spacing: .24em; color: var(--orange); }
 .ob-verbs span { font-size: 12px; letter-spacing: .12em; color: var(--ink); }
+
+/* ---------------- SETTINGS ---------------- */
+.d-list .d-row { display: flex; justify-content: space-between; align-items: center; }
+
+/* ==================================================================
+   MOTION. Short, eased, never blocking input. Respects reduced motion.
+   ================================================================== */
+:root { --ease: cubic-bezier(.2, .8, .2, 1); }
+
+/* screen transitions (nav stays put; only the page moves) */
+.scr { position: absolute; inset: 0; animation-duration: .26s; animation-timing-function: var(--ease); animation-fill-mode: both; }
+.scr.in-r { animation-name: inR; }
+.scr.in-l { animation-name: inL; }
+.scr.in-up { animation-name: inUp; }
+.scr.in-fade { animation-name: inFade; }
+@keyframes inR { from { opacity: 0; transform: translateX(28px); } to { opacity: 1; transform: none; } }
+@keyframes inL { from { opacity: 0; transform: translateX(-28px); } to { opacity: 1; transform: none; } }
+@keyframes inUp { from { opacity: 0; transform: translateY(16px) scale(.985); } to { opacity: 1; transform: none; } }
+@keyframes inFade { from { opacity: 0; } to { opacity: 1; } }
+
+/* overlays rise in */
+.ov { animation: ovIn .24s var(--ease) both; }
+@keyframes ovIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
+
+/* staggered entries: set --i inline */
+.stg { animation: stg .34s var(--ease) both; animation-delay: calc(var(--i, 0) * 55ms + 60ms); }
+@keyframes stg { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+/* text that changes (turn indicator, feedback) */
+.swap { animation: swap .24s var(--ease) both; }
+@keyframes swap { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: none; } }
+.pop { animation: pop .36s var(--ease) both; }
+@keyframes pop { 0% { opacity: 0; transform: scale(.9); } 60% { opacity: 1; transform: scale(1.03); } 100% { transform: none; } }
+
+/* board */
+.cell { transition: background .12s; }
+.cell:active { background: rgba(255, 255, 255, .035); }
+.ripple { position: absolute; inset: 24%; border: 1.5px solid var(--orange); opacity: 0; pointer-events: none; animation: ripple .5s ease-out; }
+.ripple.O { border-color: var(--blue); border-radius: 50%; }
+@keyframes ripple { from { opacity: .55; transform: scale(.55); } to { opacity: 0; transform: scale(1.35); } }
+.cell.won svg { animation: won .55s .3s var(--ease) both; }
+@keyframes won { 0% { transform: scale(1); } 45% { transform: scale(1.16); } 100% { transform: scale(1); } }
+.pred.on { animation: predPop .5s var(--ease); }
+@keyframes predPop { 0% { transform: scale(0); } 50% { transform: scale(1.8); } 100% { transform: scale(1); } }
+
+/* game chrome */
+.pl .pip.on { animation: pip .4s var(--ease); }
+@keyframes pip { 0% { transform: scale(1, 1); } 45% { transform: scale(1.25, 2.4); } 100% { transform: scale(1, 1); } }
+.g-bar.warn { animation: warn .5s ease-in-out infinite alternate; }
+@keyframes warn { from { opacity: 1; } to { opacity: .35; } }
+.m-play, .ob-btn, .card, .tbtn, .acts button { transition: transform .12s var(--ease), background .12s; }
+.m-play:active, .ob-btn:active { transform: scale(.985); }
+
+/* bars that fill on mount */
+.fill, .ob-prog .fill { transition: width .8s var(--ease); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; animation-delay: 0ms !important; transition-duration: .01ms !important; }
+}

@@ -45,9 +45,12 @@ export function Board(p: Props) {
       <div class="ln h" style={{ top: c + 'px' }} /><div class="ln h" style={{ top: 2 * c + 'px' }} />
       <div class="cells">
         {p.s.cells.map((v, i) => (
-          <button key={i} class={'cell' + (p.fadeLosers && final && (!line || !line.includes(i)) ? ' fade' : '')}
+          <button key={i} data-silent
+                  class={'cell' + (p.fadeLosers && final && (!line || !line.includes(i)) ? ' fade' : '')
+                    + (win && line!.includes(i) ? ' won' : '')}
                   onClick={() => p.onTap?.(i)}>
             {p.decorate?.(i)}
+            {v && i === p.newIdx && <i class={'ripple ' + v} key={'rp' + p.s.ply} />}
             {v ? <Glyph p={v} anim={i === p.newIdx} doom={i === dX || i === dO} />
                : p.hint ? <Glyph p={p.hint} hint /> : null}
           </button>

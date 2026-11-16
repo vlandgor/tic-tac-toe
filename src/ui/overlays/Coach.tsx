@@ -5,6 +5,7 @@ import { shadow } from '../../state/app';
 import type { CoachResult } from '../../state/overlays';
 import { Board } from '../components/Board';
 import { COLORS } from '../components/Glyph';
+import { feel } from '../feel';
 
 /** One tap per position. Answers are labelled training data, weighted higher. */
 export function Coach({ items, resolve }: { items: CoachItem[]; resolve: (r: CoachResult) => void }) {
@@ -24,6 +25,8 @@ export function Coach({ items, resolve }: { items: CoachItem[]; resolve: (r: Coa
     const n = answered + 1;
     setAnswered(n);
     setAnswer(i);
+    feel.place('X');
+    setTimeout(() => (i === it.ref ? feel.predicted() : feel.miss()), 140);
     setTimeout(() => {
       if (k + 1 < items.length) { setK(k + 1); setAnswer(-1); } else finish(n);
     }, 1300);
@@ -44,7 +47,7 @@ export function Coach({ items, resolve }: { items: CoachItem[]; resolve: (r: Coa
       <Board key={k} rules={it.rules} s={shown} cell={90} mark={52} overhang={7}
              left={75} top={262} newIdx={answer} onTap={tap}
              decorate={(i) => (answer >= 0 && !same && i === it.ref ? <i class="guess" /> : null)} />
-      <div class="abs center c-fb" style={{ color: fbColor }}>{fb}</div>
+      <div class="abs center c-fb swap" key={answer + '-' + k} style={{ color: fbColor }}>{fb}</div>
       <div class="abs c-why">
         {it.kind === 'loss' ? 'IT WAS PLAYING AS YOU AND LOST THE ROUND'
           : it.kind === 'daily' ? 'ONE POSITION A DAY · IT TRAINS YOUR SHADOW'
