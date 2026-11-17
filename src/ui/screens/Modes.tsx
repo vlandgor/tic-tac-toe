@@ -3,6 +3,10 @@ import { AWAKE_STAGE, spiritStage } from '../../core/insight';
 import type { ModeId, Player, RuleSet, State } from '../../core/rules/types';
 import { isActive, mode, rev, screen, setMode, shadow, store } from '../../state/app';
 import { Board } from '../components/Board';
+import { Scroll } from '../components/Scroll';
+
+/** card layout: first card's top, card height, distance between card tops */
+const CARD_TOP = 120, CARD_H = 180, CARD_STEP = 196;
 
 /** a tiny frozen board that shows each rule at a glance */
 function demo(rules: RuleSet, moves: [number, Player][]): State {
@@ -21,6 +25,7 @@ export function Modes() {
   const p = store.profile;
   return (
     <div class="screen">
+      <Scroll height={CARD_TOP + MODES.length * CARD_STEP - (CARD_STEP - CARD_H) + 24}>
       <div class="abs center p-sub lbl2">YOUR SPIRIT LEARNS EACH ONE SEPARATELY</div>
 
       {MODES.map((r, idx) => {
@@ -28,7 +33,7 @@ export function Modes() {
         const s = DEMOS[r.id] ?? r.start(), t = r.terminal(s);
         return (
           <button key={r.id} class={'card stg' + (mode.value === r.id ? ' sel' : '')}
-                  style={{ top: 120 + idx * 196 + 'px', height: '180px', '--i': idx } as any}
+                  style={{ top: CARD_TOP + idx * CARD_STEP + 'px', height: CARD_H + 'px', '--i': idx } as any}
                   onClick={() => { setMode(r.id); screen.value = 'menu'; }}>
             <div class="ct">{r.name}</div>
             <div class="cs" style={{ width: '220px', lineHeight: '18px' }}>{r.blurb}</div>
@@ -37,12 +42,13 @@ export function Modes() {
                    lineColor="rgba(255,255,255,.3)" lineWidth={1} terminal={t.over ? t : null} showWinLine />
             <div class="stats3">
               <div><div class="v">{p.rating[r.id]}</div><div class="lbl2">RATING</div></div>
-              <div><div class="v" style={{ color: act || st.idx >= AWAKE_STAGE ? 'var(--orange)' : '#fff' }}>{st.name}</div><div class="lbl2">SPIRIT</div></div>
+              <div><div class="v stage-v" style={{ color: act || st.idx >= AWAKE_STAGE ? 'var(--orange)' : '#fff' }}>{st.name}</div><div class="lbl2">SPIRIT</div></div>
               <div><div class="v">{fid === null ? '—' : fid + '%'}</div><div class="lbl2">FIDELITY</div></div>
             </div>
           </button>
         );
       })}
+      </Scroll>
     </div>
   );
 }

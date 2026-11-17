@@ -55,9 +55,19 @@ export const feel = {
 
 /** one global listener: unlock audio on first touch, tap sound for every button not marked silent */
 export function installGlobalFeel(): void {
+  const sounds = (b: Element | null | undefined): b is Element =>
+    !!b && !b.hasAttribute('data-silent') && !b.hasAttribute('disabled');
+
+  // most buttons click the instant they're touched — that's what makes them feel quick
   document.addEventListener('pointerdown', (e) => {
     feel.unlock();
     const b = (e.target as Element | null)?.closest?.('button');
-    if (b && !b.hasAttribute('data-silent') && !b.hasAttribute('disabled')) feel.tap();
+    if (sounds(b) && !b.closest('.scroll')) feel.tap();
+  }, { capture: true });
+
+  // but inside a scroll region a touch may be the start of a scroll, so those wait for a real click
+  document.addEventListener('click', (e) => {
+    const b = (e.target as Element | null)?.closest?.('button');
+    if (sounds(b) && b.closest('.scroll')) feel.tap();
   }, { capture: true });
 }

@@ -4,6 +4,7 @@ import { spiritStage } from '../../core/insight';
 import { isActive, rev, screen, setMode, shadow, startSession, store } from '../../state/app';
 import { dailyDone, enterGauntlet, solveDaily } from '../../state/flows';
 import { COLORS } from '../components/Glyph';
+import { Scroll } from '../components/Scroll';
 import { feel } from '../feel';
 
 export function fmtLeft(ms: number): string {
@@ -11,6 +12,9 @@ export function fmtLeft(ms: number): string {
   return d ? `${d}D ${h}H` : `${h}H ${m % 60}M`;
 }
 const PLACE = { 1: 'CHAMPION', 2: 'RUNNER-UP', 3: 'KNOCKED OUT' } as const;
+
+/** frame y where the last card ends (board challenge: 694 + 120), plus a bottom margin */
+const EVENTS_END = 694 + 120 + 24;
 
 export function Events() {
   rev.value;
@@ -36,6 +40,7 @@ export function Events() {
 
   return (
     <div class="screen">
+      <Scroll height={EVENTS_END}>
       <div class="abs center p-sub lbl2">NEW PUZZLE DAILY · NEW GAUNTLET WEEKLY</div>
 
       {/* daily coach puzzle */}
@@ -100,7 +105,7 @@ export function Events() {
         <div class="cs">THIS WEEK · {fMode.name}</div>
         <div class="cx o">PLAY RANKED ›</div>
       </button>
-
+      </Scroll>
     </div>
   );
 }

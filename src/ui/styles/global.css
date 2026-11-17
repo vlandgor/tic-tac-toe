@@ -116,11 +116,19 @@ svg.doom { opacity: .3; }
 .m-play span { font-size: 22px; letter-spacing: .36em; color: #000; text-indent: .36em; }
 .m-play:active { background: var(--orange-dk); }
 
+/* scroll region between the top bar and the nav (see Scroll.tsx) */
+.scroll { position: absolute; left: 0; right: 0; overflow-x: hidden; overflow-y: auto;
+          overscroll-behavior: contain; -webkit-overflow-scrolling: touch; touch-action: pan-y;
+          scrollbar-width: none; }
+.scroll::-webkit-scrollbar { display: none; }
+.scroll-inner { position: relative; }
+
 /* spirit growth: one segment per stage step */
 .pips-row { display: flex; gap: 3px; }
 .pips-row i { flex: 1; height: 100%; background: rgba(255, 255, 255, .14); overflow: hidden; }
 .pips-row b { display: block; height: 100%; transition: width .7s var(--ease); }
 .h-stats .v.stage-v { font-size: 13px; letter-spacing: .12em; height: 21px; line-height: 21px; }
+.card .stats3 .v.stage-v { font-size: 14px; letter-spacing: .14em; line-height: 22px; height: 22px; }
 .pm-stats .v.stage-v { font-size: 15px; letter-spacing: .14em; height: 22px; line-height: 22px; }
 
 /* quiet footer */
