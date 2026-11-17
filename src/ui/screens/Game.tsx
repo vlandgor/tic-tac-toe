@@ -8,7 +8,7 @@ import { pickUnsure } from '../../core/shadow/coach';
 import { modeById } from '../../core/rules/modes';
 import { weekKey } from '../../core/events';
 import { commit, isActive, rivalModels, rules, screen, shadow, startSession, store, type Session } from '../../state/app';
-import { closeOverlay, overlay, runCoach, runTraining, type SummaryRow } from '../../state/overlays';
+import { closeOverlay, overlay, runCoach, runTraining, takeFound, type SummaryRow } from '../../state/overlays';
 import { Board } from '../components/Board';
 import { COLORS } from '../components/Glyph';
 import { feel } from '../feel';
@@ -28,6 +28,9 @@ export function Game({ sess }: { sess: Session }) {
   const learns = sess.kind !== 'challenge';
   // the stage the spirit started this match in — a level-up is celebrated once, when it's crossed
   const stageAt = useRef(spiritStage(shadow.peek(r.id)).idx);
+  // anything noticed before this match (daily puzzle, coaching) is the Spirit tab's to show, not ours
+  const cleared = useRef(false);
+  if (!cleared.current) { takeFound(); cleared.current = true; }
   const agent: Agent = useMemo(
     () => (sess.kind === 'challenge'
       // a plain heuristic opponent: no model, so no spirit head is created for a big board
@@ -135,6 +138,9 @@ export function Game({ sess }: { sess: Session }) {
     stageAt.current = stage.idx;
     rows.push({ k: 'YOUR SPIRIT', v: <span style={{ color: grew ? COLORS.X : '#fff' }}>{stage.name}{grew ? '  ↑' : ''}</span> });
     if (grew) setTimeout(() => feel.trophy(), 450);
+    const found = takeFound().slice(0, 2);
+    for (const f of found) rows.push({ k: 'IT NOTICED', v: <span style={{ color: COLORS.X }}>{f.def.name}</span> });
+    if (found.length && !grew) setTimeout(() => feel.predicted(), 450);
     if (over && coached) rows.push({ k: 'COACHED', v: `${coached} POSITIONS` });
     const how = r.id === 'reverse' && t.winner && !over ? (youWon ? ' · THEY MADE THREE' : ' · YOU MADE THREE') : '';
     overlay.value = { kind: 'summary', data: {
@@ -143,6 +149,7 @@ export function Game({ sess }: { sess: Session }) {
       sub: over ? `${r.name} VS ${agent.name}   ${cur.score.X} — ${cur.score.O}` : `${r.name} · SERIES ${cur.score.X} — ${cur.score.O}${how}`,
       rows,
       learned: grew ? `YOUR SPIRIT IS NOW ${stage.name}  ·  ${stage.line}`
+        : found.length ? found[0].def.line
         : isActive(r) ? insight(h, r)
         : stage.line,
       primary: over

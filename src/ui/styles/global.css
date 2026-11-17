@@ -123,6 +123,18 @@ svg.doom { opacity: .3; }
 .scroll::-webkit-scrollbar { display: none; }
 .scroll-inner { position: relative; }
 
+/* discoveries — habits the spirit has noticed */
+.disc-head { left: 36px; width: 348px; display: flex; justify-content: space-between; }
+.disc-head .lbl2 { font-size: 11px; }
+.disc { position: relative; display: flex; align-items: center; border-bottom: 1px solid var(--hair); }
+.disc .tx { flex: 1; min-width: 0; }
+.disc .nm { font-size: 15px; letter-spacing: .18em; }
+.disc .ln { font-size: 10px; letter-spacing: .14em; color: var(--ink2); margin-top: 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.disc .tag { font-size: 10px; letter-spacing: .18em; color: var(--orange); border: 1px solid var(--orange); padding: 4px 7px 3px; }
+.disc.new .nm { color: var(--orange); }
+.disc.new::before { content: ''; position: absolute; left: -14px; top: 18px; bottom: 18px; width: 2px; background: var(--orange); }
+.disc.locked .nm { color: var(--dim); letter-spacing: .3em; }
+
 /* spirit growth: one segment per stage step */
 .pips-row { display: flex; gap: 3px; }
 .pips-row i { flex: 1; height: 100%; background: rgba(255, 255, 255, .14); overflow: hidden; }
@@ -135,6 +147,9 @@ svg.doom { opacity: .3; }
 .pf-note { top: 762px; font-size: 10px; letter-spacing: .16em; color: var(--ink2); }
 .nav { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; border-top: 1px solid var(--hair); }
 .nav { background: #000; z-index: 5; }
+.nav .tab { position: relative; }
+/* something new waits on that tab */
+.tab-dot { position: absolute; top: 14px; left: 50%; margin-left: 13px; width: 6px; height: 6px; border-radius: 50%; background: var(--orange); }
 .tab { height: 84px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative; }
 .tab svg { width: 24px; height: 24px; }
 .tab .tl { font-size: 10px; letter-spacing: .16em; }

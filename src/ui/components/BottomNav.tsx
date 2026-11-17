@@ -17,7 +17,8 @@ const TABS: { id: Screen; label: string; icon: (c: string) => JSX.Element }[] = 
 
 export function BottomNav() {
   const cur = screen.value;
-  rev.value; // re-render when the player changes their spirit
+  rev.value; // re-render when the player changes their spirit, or it notices something
+  const unseen = Object.values(store.profile.discoveries).some((d) => !d.seen);
   return (
     <div class="nav">
       {TABS.map((t) => {
@@ -26,6 +27,7 @@ export function BottomNav() {
           <button key={t.id} class={'tab' + (act ? ' act' : '')} aria-label={t.label} onClick={() => (screen.value = t.id)}>
             {t.icon(act ? hot : ink)}
             <span class="tl" style={{ color: act ? hot : ink }}>{t.label}</span>
+            {t.id === 'shadow' && unseen && !act && <i class="tab-dot" />}
           </button>
         );
       })}

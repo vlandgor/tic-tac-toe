@@ -4,7 +4,8 @@ import type { CoachItem } from '../core/shadow/coach';
 import type { AwayResult } from '../core/profile';
 import type { RuleSet } from '../core/rules/types';
 import { trainHead } from '../train/trainer';
-import { commit, shadow } from './app';
+import { commit, shadow, store } from './app';
+import { detectDiscoveries, type FoundDiscovery } from '../core/discoveries';
 
 export interface SummaryRow { k: string; v: ComponentChildren; }
 export interface SummaryData {
@@ -48,8 +49,15 @@ export async function runTraining(rules: RuleSet): Promise<void> {
   const left = 900 - (performance.now() - started);
   if (left > 0) await new Promise((r) => setTimeout(r, left));
   overlay.value = null;
+  // every way the spirit learns ends here, so this is the one place to notice new habits
+  const found = detectDiscoveries(shadow, store.profile);
+  if (found.length) lastFound.push(...found);
   commit();
 }
+
+/** discoveries found since the last time a screen claimed them — the match summary announces these */
+const lastFound: FoundDiscovery[] = [];
+export const takeFound = (): FoundDiscovery[] => lastFound.splice(0, lastFound.length);
 
 export async function runTrainingMany(list: RuleSet[]): Promise<void> {
   for (const r of list) await runTraining(r);

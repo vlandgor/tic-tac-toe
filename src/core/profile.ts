@@ -44,6 +44,8 @@ export interface Profile {
   daily: DailyState;
   gauntlet: GauntletResult | null;
   challenge: ChallengeState | null;
+  /** habits the spirit has noticed — key `${mode|'*'}:${id}` (see core/discoveries) */
+  discoveries: Record<string, { at: number; seen: boolean }>;
   trophies: number;
   /** finished the first-run flow */
   onboarded: boolean;
@@ -57,7 +59,7 @@ export function defaultProfile(): Profile {
   for (const m of MODES) { rating[m.id] = START_RATING; lossQ[m.id] = []; }
   return { name: 'PLAYER', spirit: DEFAULT_SPIRIT, mode: 'classic', rating, rivals: makeRivals(), lastRival: null, lastSeen: 0,
            away: [], lossQ, mini: { w: 0, l: 0, d: 0 }, daily: { last: null, streak: 0, best: 0 },
-           gauntlet: null, challenge: null, trophies: 0, onboarded: false, settings: { sound: true, haptics: true },
+           gauntlet: null, challenge: null, discoveries: {}, trophies: 0, onboarded: false, settings: { sound: true, haptics: true },
            ignoreGate: false };
 }
 
@@ -74,6 +76,7 @@ export function normalizeProfile(p: Partial<Profile>): Profile {
   if (!out.rivals?.length) out.rivals = d.rivals;
   // a save left on a big board (an old build, or a Board Challenge) returns to 3x3
   if (!MODES.some((m) => m.id === out.mode)) out.mode = toRegular(out.mode);
+  if (!out.discoveries) out.discoveries = {};
   // saves from before spirits existed get the default animal
   if (!out.spirit) out.spirit = DEFAULT_SPIRIT;
   return out;

@@ -6,6 +6,7 @@ import { tactics } from '../src/core/tactics';
 import { eloDelta, makeRivals, matchmake } from '../src/core/rating';
 import { Shadow, SHADOW_LIMITS } from '../src/core/shadow/shadow';
 import { AWAKE_STAGE, STAGES, spiritStage } from '../src/core/insight';
+import { detectDiscoveries, foundFor } from '../src/core/discoveries';
 import { newMatch, play, matchOver } from '../src/core/match';
 import { simulateAway, awayMatchesFor } from '../src/core/away';
 import { defaultProfile } from '../src/core/profile';
@@ -326,5 +327,67 @@ describe('spirit stages', () => {
 
   it('stages are strictly increasing', () => {
     for (let i = 1; i < STAGES.length; i++) expect(STAGES[i].at).toBeGreaterThan(STAGES[i - 1].at);
+  });
+});
+
+/* ---------------- discoveries ---------------- */
+describe('discoveries', () => {
+  // build a spirit whose classic head has exactly the traits we want
+  const spirit = (traits: Partial<Record<'centerOpen' | 'corner' | 'block' | 'finish', [number, number]>>, extra: any = {}) => {
+    const sh = new Shadow();
+    const h = sh.head(Classic);
+    Object.assign(h.traits, traits);
+    Object.assign(h, extra);
+    return sh;
+  };
+
+  it('finds nothing without enough evidence', () => {
+    const sh = spirit({ centerOpen: [4, 4] });   // 100% — but only 4 openings, needs 5
+    expect(detectDiscoveries(sh, defaultProfile())).toEqual([]);
+  });
+
+  it('finds a habit once the evidence is there', () => {
+    const sh = spirit({ centerOpen: [5, 5] });
+    const found = detectDiscoveries(sh, defaultProfile());
+    expect(found.map((f) => f.def.name)).toEqual(['CENTRE FIRST']);
+    expect(found[0].key).toBe('classic:centre');
+    expect(found[0].seen).toBe(false);
+  });
+
+  it('opposite habits are mutually exclusive', () => {
+    const corners = detectDiscoveries(spirit({ corner: [12, 15] }), defaultProfile()).map((f) => f.def.id);
+    const edges   = detectDiscoveries(spirit({ corner: [2, 15] }),  defaultProfile()).map((f) => f.def.id);
+    expect(corners).toContain('corners'); expect(corners).not.toContain('edges');
+    expect(edges).toContain('edges');     expect(edges).not.toContain('corners');
+  });
+
+  it('is announced once, then stays in the collection', () => {
+    const sh = spirit({ block: [6, 6] }), p = defaultProfile();
+    expect(detectDiscoveries(sh, p).map((f) => f.def.id)).toEqual(['wall']);
+    expect(detectDiscoveries(sh, p)).toEqual([]);           // not announced twice
+    sh.peek('classic')!.traits.block = [0, 50];              // habit changes later...
+    expect(foundFor(p, 'classic').map((f) => f.def.id)).toContain('wall'); // ...the entry stays
+  });
+
+  it('global discoveries are found once and show on every mode page', () => {
+    const sh = new Shadow();
+    sh.latency = new Array(25).fill(800);                    // 0.8s average, enough samples
+    const p = defaultProfile();
+    const found = detectDiscoveries(sh, p);
+    expect(found.filter((f) => f.def.id === 'quick').length).toBe(1);
+    expect(p.discoveries['*:quick']).toBeTruthy();
+    for (const m of MODES) expect(foundFor(p, m.id).map((f) => f.def.id)).toContain('quick');
+  });
+
+  it('fidelity traits wait for a full window', () => {
+    const short = spirit({}, { recent: new Array(10).fill(1) });
+    expect(detectDiscoveries(short, defaultProfile()).map((f) => f.def.id)).not.toContain('openbook');
+    const full = spirit({}, { recent: new Array(20).fill(1) });
+    expect(detectDiscoveries(full, defaultProfile()).map((f) => f.def.id)).toContain('openbook');
+  });
+
+  it('old saves get an empty collection', () => {
+    const p = normalizeProfile({ name: 'OLD' } as any);
+    expect(p.discoveries).toEqual({});
   });
 });

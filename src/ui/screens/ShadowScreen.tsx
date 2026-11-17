@@ -1,30 +1,27 @@
-import { useState } from 'preact/hooks';
+import { useEffect, useState } from 'preact/hooks';
+import { foundFor } from '../../core/discoveries';
 import { AWAKE_STAGE, spiritStage } from '../../core/insight';
 import { lossCount } from '../../core/profile';
 import { MODES, modeById } from '../../core/rules/modes';
 import type { ModeId } from '../../core/rules/types';
-import { pct, type Ratio } from '../../core/shadow/shadow';
-import { isActive, mode, rev, shadow, store } from '../../state/app';
+import { commit, isActive, mode, rev, shadow, store } from '../../state/app';
 import { coachLosses } from '../../state/flows';
 import { COLORS } from '../components/Glyph';
+import { Scroll } from '../components/Scroll';
 import { StagePips } from '../components/StagePips';
-import { CountUp, useMounted } from '../feel/motion';
+import { CountUp } from '../feel/motion';
 
 const signed = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n);
 
-function Trait({ k, r }: { k: string; r: Ratio }) {
-  const v = pct(r);
-  const mounted = useMounted(120);
-  return (
-    <div class="trait">
-      <div class="top"><div class="k">{k}</div>
-        <div class="v">{v === null ? <span style={{ color: 'var(--ink2)' }}>NO DATA</span> : v + '%'}</div></div>
-      <div class="track"><div class="fill" style={{ width: (mounted ? v ?? 0 : 0) + '%' }} /></div>
-    </div>
-  );
-}
+/* vertical rhythm, in frame px */
+const DISC_TOP = 314;   // "DISCOVERIES" header
+const DISC_ROW = 58;    // one discovery
+const AWAY_ROW = 44;    // one away-match row
 
-/** Your shadow, one mode at a time: how well it knows you, and what it did while you were away. */
+/**
+ * Your spirit, one mode at a time: how well it reads you, the habits it has
+ * noticed (discoveries), and what it did while you were away.
+ */
 export function ShadowScreen() {
   rev.value;
   const p = store.profile;
@@ -35,63 +32,106 @@ export function ShadowScreen() {
   const active = isActive(r), stage = spiritStage(h), losses = lossCount(p);
   const log = p.away.slice(0, 3);
 
+  const found = foundFor(p, r.id);
+  // keep a hint of what's left to find: a fuller row of locks when nothing is found yet
+  const locked = found.length ? 1 : 3;
+
+  // NEW stays lit while you're looking; leaving the mode (or the tab) marks it seen
+  useEffect(() => () => {
+    let changed = false;
+    for (const f of foundFor(store.profile, view)) {
+      const d = store.profile.discoveries[f.key];
+      if (d && !d.seen) { d.seen = true; changed = true; }
+    }
+    if (changed) commit();
+  }, [view]);
+
+  // everything below the discoveries flows from how many there are
+  const listTop = DISC_TOP + 30;
+  const listEnd = listTop + (found.length + locked) * DISC_ROW;
+  const statsTop = listEnd + 24;
+  const coachTop = statsTop + 70;
+  const awayTop = coachTop + (losses > 0 ? 60 : 0);
+  const end = awayTop + 22 + Math.max(1, log.length) * AWAY_ROW + 24;
+
   return (
     <div class="screen">
-      <div class="abs selrow" style={{ top: '70px' }}>
-        <button class="arr" aria-label="Previous mode" onClick={() => cycle(-1)}>
-          <svg width="11" height="18" viewBox="0 0 12 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M10 2 2 10l8 8" /></svg>
-        </button>
-        <div class="mid">{r.name}</div>
-        <button class="arr" aria-label="Next mode" onClick={() => cycle(1)}>
-          <svg width="11" height="18" viewBox="0 0 12 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M2 2l8 8-8 8" /></svg>
-        </button>
-      </div>
-      <div class="abs center" style={{ top: '130px', fontSize: '13px', letterSpacing: '.18em', color: active ? COLORS.X : 'var(--ink)' }}>
-        {active ? 'IN MATCHMAKING · PLAYING AS YOU' : stage.line}
-      </div>
-      <div class="abs center h-fid" style={{ top: '158px' }} key={r.id}>{fid === null ? '—' : <><CountUp to={fid} ms={800} />%</>}</div>
-      <div class="abs center lbl" style={{ top: '254px' }}>STYLE FIDELITY</div>
-      <div class="abs center h-note" style={{ top: '276px' }}>CHOICE MOVES ONLY · FORCED MOVES EXCLUDED</div>
-
-      <div class="abs h-traits" style={{ top: '314px' }}>
-        <Trait key={r.id + 'c'} k="OPENS CENTER" r={h.traits.centerOpen} />
-        <Trait key={r.id + 'k'} k="PLAYS CORNERS" r={h.traits.corner} />
-        <Trait key={r.id + 'b'} k="BLOCKS THREATS" r={h.traits.block} />
-        <Trait key={r.id + 'f'} k="TAKES THE WIN" r={h.traits.finish} />
-      </div>
-      <div class="abs h-stats" style={{ top: '528px' }}>
-        <div class="st"><div class="v">{p.rating[r.id]}</div><div class="lbl2">RATING</div></div>
-        <div class="st">
-          <div class="v stage-v" style={{ color: stage.idx >= AWAKE_STAGE ? COLORS.X : '#fff' }}>{stage.name}</div>
-          <StagePips stage={stage} width={64} />
+      <Scroll height={end}>
+        <div class="abs selrow" style={{ top: '70px' }}>
+          <button class="arr" aria-label="Previous mode" onClick={() => cycle(-1)}>
+            <svg width="11" height="18" viewBox="0 0 12 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M10 2 2 10l8 8" /></svg>
+          </button>
+          <div class="mid">{r.name}</div>
+          <button class="arr" aria-label="Next mode" onClick={() => cycle(1)}>
+            <svg width="11" height="18" viewBox="0 0 12 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M2 2l8 8-8 8" /></svg>
+          </button>
         </div>
-        <div class="st"><div class="v">{h.coached}</div><div class="lbl2">COACHED</div></div>
-        <div class="st"><div class="v">{tempo ? tempo.toFixed(1) + 's' : '—'}</div><div class="lbl2">TEMPO</div></div>
-      </div>
-      {losses > 0 && (
-        <button class="tbtn" style={{ top: '598px', height: '44px', color: COLORS.X, letterSpacing: '.16em' }} onClick={coachLosses}>
-          COACH FROM LOSSES · {Math.min(losses, 4)}
-        </button>
-      )}
+        <div class="abs center" style={{ top: '130px', fontSize: '13px', letterSpacing: '.18em', color: active ? COLORS.X : 'var(--ink)' }}>
+          {active ? 'IN MATCHMAKING · PLAYING AS YOU' : stage.line}
+        </div>
+        <div class="abs center h-fid" style={{ top: '158px' }} key={r.id}>{fid === null ? '—' : <><CountUp to={fid} ms={800} />%</>}</div>
+        <div class="abs center lbl" style={{ top: '254px' }}>STYLE FIDELITY</div>
+        <div class="abs center h-note" style={{ top: '276px' }}>HOW OFTEN IT PREDICTS YOUR CHOICES</div>
 
-      <div class="abs lbl2" style={{ left: '36px', top: '658px', fontSize: '11px' }}>PLAYED AS YOU</div>
-      <div class="abs rows" style={{ top: '680px' }}>
-        {log.length ? log.map((a, i) => {
-          const c = a.res === 'W' ? COLORS.X : a.res === 'L' ? COLORS.O : '#fff';
-          return (
-            <div class="arow stg" key={i} style={{ height: '44px', '--i': i } as any}>
-              <div class="m">{modeById(a.mode).name}</div>
-              <div style={{ color: c }}>{a.res} {a.score}</div>
-              <div>{a.rival}</div>
-              <div class="d" style={{ color: c }}>{signed(a.delta)}</div>
+        {/* discoveries — habits it has noticed, newest first */}
+        <div class="abs disc-head" style={{ top: DISC_TOP + 'px' }}>
+          <span class="lbl2">DISCOVERIES</span>
+          <span class="lbl2">{found.length ? `${found.length} FOUND` : 'NONE YET'}</span>
+        </div>
+        <div class="abs rows" style={{ top: listTop + 'px' }} key={r.id + '-disc'}>
+          {found.map((f, i) => (
+            <div class={'disc stg' + (f.seen ? '' : ' new')} key={f.key} style={{ height: DISC_ROW + 'px', '--i': i } as any}>
+              <div class="tx">
+                <div class="nm">{f.def.name}</div>
+                <div class="ln">{f.def.line}{f.mode === null ? ' · EVERY MODE' : ''}</div>
+              </div>
+              {!f.seen && <div class="tag">NEW</div>}
             </div>
-          );
-        }) : (
-          <div class="lbl2" style={{ fontSize: '11px', lineHeight: '20px', marginTop: '8px' }}>
-            NOTHING YET<br />YOUR SPIRIT PLAYS WHILE YOU'RE AWAY
+          ))}
+          {Array.from({ length: locked }, (_, i) => (
+            <div class="disc locked stg" key={'lk' + i} style={{ height: DISC_ROW + 'px', '--i': found.length + i } as any}>
+              <div class="tx">
+                <div class="nm">? ? ?</div>
+                <div class="ln">{i === 0 ? "KEEP PLAYING · IT'S STILL WATCHING YOU" : ' '}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div class="abs h-stats" style={{ top: statsTop + 'px' }}>
+          <div class="st"><div class="v">{p.rating[r.id]}</div><div class="lbl2">RATING</div></div>
+          <div class="st">
+            <div class="v stage-v" style={{ color: stage.idx >= AWAKE_STAGE ? COLORS.X : '#fff' }}>{stage.name}</div>
+            <StagePips stage={stage} width={64} />
           </div>
+          <div class="st"><div class="v">{h.coached}</div><div class="lbl2">COACHED</div></div>
+          <div class="st"><div class="v">{tempo ? tempo.toFixed(1) + 's' : '—'}</div><div class="lbl2">TEMPO</div></div>
+        </div>
+        {losses > 0 && (
+          <button class="tbtn" style={{ top: coachTop + 'px', height: '44px', color: COLORS.X, letterSpacing: '.16em' }} onClick={coachLosses}>
+            COACH FROM LOSSES · {Math.min(losses, 4)}
+          </button>
         )}
-      </div>
+
+        <div class="abs lbl2" style={{ left: '36px', top: awayTop + 'px', fontSize: '11px' }}>PLAYED AS YOU</div>
+        <div class="abs rows" style={{ top: awayTop + 22 + 'px' }}>
+          {log.length ? log.map((a, i) => {
+            const c = a.res === 'W' ? COLORS.X : a.res === 'L' ? COLORS.O : '#fff';
+            return (
+              <div class="arow stg" key={i} style={{ height: AWAY_ROW + 'px', '--i': i } as any}>
+                <div class="m">{modeById(a.mode).name}</div>
+                <div style={{ color: c }}>{a.res} {a.score}</div>
+                <div>{a.rival}</div>
+                <div class="d" style={{ color: c }}>{signed(a.delta)}</div>
+              </div>
+            );
+          }) : (
+            <div class="lbl2" style={{ fontSize: '11px', lineHeight: '20px', marginTop: '8px' }}>
+              NOTHING YET<br />YOUR SPIRIT PLAYS WHILE YOU'RE AWAY
+            </div>
+          )}
+        </div>
+      </Scroll>
     </div>
   );
 }
