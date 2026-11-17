@@ -24,6 +24,8 @@ export type Overlay =
   | { kind: 'summary'; data: SummaryData }
   | { kind: 'away'; results: AwayResult[] }
   | { kind: 'spirit' }
+  | { kind: 'modeSelect' }
+  | { kind: 'custom' }
   | { kind: 'dev' };
 
 export const overlay = signal<Overlay | null>(null);

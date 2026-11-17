@@ -1,6 +1,11 @@
 import { other, type Player, type RuleSet, type State, type Terminal } from './rules/types';
 
-export const MATCH = { target: 3, maxRounds: 7, turnSeconds: 15 } as const;
+/**
+ * `timed: false` — matches are played at the player's own pace. Opponents are
+ * spirits, not live players, so there is nobody to keep waiting. The clock code
+ * is kept intact behind this flag for a possible timed mode later.
+ */
+export const MATCH = { target: 3, maxRounds: 7, turnSeconds: 15, timed: false } as const;
 
 /**
  * Pure match state: first to `target` rounds, capped at `maxRounds`.

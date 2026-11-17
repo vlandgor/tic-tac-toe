@@ -1,6 +1,5 @@
-import { MODES } from '../../core/rules/modes';
 import { gateProgress } from '../../core/insight';
-import { isActive, rev, rules, screen, setMode, shadow, startSession, store } from '../../state/app';
+import { isActive, rev, rules, screen, shadow, startSession, store } from '../../state/app';
 import { overlay } from '../../state/overlays';
 import { MiniBoard } from '../components/MiniBoard';
 import { SpiritIcon } from '../components/SpiritIcon';
@@ -11,7 +10,6 @@ export function Menu() {
   const r = rules.value, p = store.profile;
   const h = shadow.peek(r.id), fid = shadow.fidelity(r.id), active = isActive(r);
   const gate = gateProgress(h);
-  const cycle = (d: number) => setMode(MODES[(MODES.indexOf(r) + d + MODES.length) % MODES.length].id);
 
   return (
     <div class="screen">
@@ -44,17 +42,24 @@ export function Menu() {
       </div>
       <div class="hair" style={{ left: '36px', top: '554px', width: '348px' }} />
 
-      <div class="abs m-mode">
-        <button class="arr" aria-label="Previous mode" onClick={() => cycle(-1)}>
-          <svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M10 2 2 10l8 8" /></svg>
+      <button class="abs m-mode" onClick={() => (screen.value = 'modes')}>
+        <div class="nm">{r.name}</div>
+        <div class="bl">{r.blurb}</div>
+      </button>
+
+      <div class="abs m-playrow">
+        <button class="m-sq" aria-label="Custom game" onClick={() => (overlay.value = { kind: 'custom' })}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round">
+            <path d="M4 7h10M18 7h2M4 17h4M12 17h8" /><circle cx="16" cy="7" r="2.1" /><circle cx="10" cy="17" r="2.1" />
+          </svg>
         </button>
-        <button class="mid" onClick={() => (screen.value = 'modes')}><div class="nm">{r.name}</div><div class="bl">{r.blurb}</div></button>
-        <button class="arr" aria-label="Next mode" onClick={() => cycle(1)}>
-          <svg width="12" height="20" viewBox="0 0 12 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M2 2l8 8-8 8" /></svg>
+        <button class="m-play" onClick={() => (screen.value = 'search')}><span>PLAY</span></button>
+        <button class="m-sq" aria-label="Select mode" onClick={() => (overlay.value = { kind: 'modeSelect' })}>
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.5" stroke-linejoin="round">
+            <path d="M12 3.4 21 8l-9 4.6L3 8z" /><path d="M3 12.4 12 17l9-4.6M3 16.6 12 21l9-4.4" />
+          </svg>
         </button>
       </div>
-
-      <button class="abs m-play" onClick={() => (screen.value = 'search')}><span>PLAY</span></button>
       <div class="abs m-sub">
         <button onClick={() => startSession('mirror')}>MIRROR MATCH</button>
         <div class="sep" />

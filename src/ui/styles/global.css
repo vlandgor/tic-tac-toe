@@ -75,13 +75,15 @@ svg.doom { opacity: .3; }
 .m-stats { left: 36px; top: 482px; width: 348px; height: 64px; display: grid; grid-template-columns: repeat(3, 1fr); }
 .m-stats .st { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }
 .m-stats .v { font-size: 24px; letter-spacing: .06em; }
-.m-mode { left: 36px; top: 566px; width: 348px; height: 64px; display: flex; align-items: center; }
-.m-mode .arr { width: 56px; height: 64px; display: flex; align-items: center; justify-content: center; opacity: .85; }
-.m-mode .arr:active { opacity: .4; }
-.m-mode .mid { flex: 1; text-align: center; }
+.m-mode { left: 36px; top: 566px; width: 348px; height: 64px; background: none; border: 0; padding: 0;
+          display: flex; flex-direction: column; align-items: center; justify-content: center; }
 .m-mode .nm { font-size: 20px; letter-spacing: .22em; text-indent: .22em; }
 .m-mode .bl { font-size: 11px; letter-spacing: .14em; color: var(--ink2); margin-top: 9px; }
-.m-play { left: 36px; top: 642px; width: 348px; height: 70px; background: var(--orange); display: flex; align-items: center; justify-content: center; }
+.m-playrow { left: 36px; top: 642px; width: 348px; height: 70px; display: flex; gap: 10px; }
+.m-sq { width: 70px; height: 70px; background: none; border: 1px solid var(--hair); padding: 0;
+        display: flex; align-items: center; justify-content: center; }
+.m-sq:active { background: rgba(255, 255, 255, .06); }
+.m-play { flex: 1; height: 70px; background: var(--orange); display: flex; align-items: center; justify-content: center; }
 .m-play span { font-size: 22px; letter-spacing: .36em; color: #000; text-indent: .36em; }
 .m-play:active { background: var(--orange-dk); }
 .m-sub { left: 36px; top: 722px; width: 348px; height: 52px; display: flex; align-items: center; }
@@ -250,6 +252,7 @@ svg.doom { opacity: .3; }
 .sheet-row .bl { font-size: 10px; letter-spacing: .12em; color: var(--ink2); margin-top: 7px; }
 .sheet-row.on .nm { color: var(--orange); }
 .sheet-row .tick { margin-left: auto; color: var(--orange); font-size: 14px; }
+.sheet-more { width: 100%; height: 48px; margin-top: 10px; background: none; border: 0; font-size: 11px; }
 
 /* ---------------- SETTINGS ---------------- */
 .d-list .d-row { display: flex; justify-content: space-between; align-items: center; }

@@ -17,6 +17,7 @@ import { Summary } from './overlays/Summary';
 import { Away } from './overlays/Away';
 import { Dev } from './overlays/Dev';
 import { SpiritSheet } from './overlays/SpiritSheet';
+import { CustomSheet, ModeSheet } from './overlays/ModeSheet';
 
 function Screen() {
   switch (screen.value) {
@@ -40,6 +41,8 @@ function Overlay() {
     case 'summary': return <Summary data={o.data} />;
     case 'away': return <Away results={o.results} />;
     case 'spirit': return <SpiritSheet />;
+    case 'modeSelect': return <ModeSheet />;
+    case 'custom': return <CustomSheet />;
     case 'dev': return <Dev />;
   }
 }

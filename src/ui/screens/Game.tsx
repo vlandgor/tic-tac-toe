@@ -38,20 +38,21 @@ export function Game({ sess }: { sess: Session }) {
   }, [m.s.ply, m.round]);
 
   useEffect(() => {
-    if (!m.locked && !paused && left > 0 && left <= 5) feel.warn();
+    if (MATCH.timed && !m.locked && !paused && left > 0 && left <= 5) feel.warn();
   }, [left]);
 
-  /* ---------- turn clock ---------- */
+  /* ---------- turn clock (only when MATCH.timed) ---------- */
   useEffect(() => {
     setLeft(MATCH.turnSeconds);
     if (m.locked || paused) return;
     if (m.turn === 'X') moveStart.current = Date.now();
+    if (!MATCH.timed) return;
     const iv = setInterval(() => setLeft((l) => l - 1), 1000);
     return () => clearInterval(iv);
   }, [m.turn, m.lastMove, m.round, m.locked, paused]);
 
   useEffect(() => {
-    if (left > 0 || m.locked || paused) return;
+    if (!MATCH.timed || left > 0 || m.locked || paused) return;
     const legal = r.legal(m.s);
     if (!legal.length) return;
     // timeout: the move is made for you and is NOT learned
@@ -64,7 +65,7 @@ export function Game({ sess }: { sess: Session }) {
     const t = setTimeout(() => {
       const cur = mRef.current;
       if (!alive.current || cur.locked || cur.turn !== 'O') return;
-      const mv = agent.pick(r, cur.s, 'O', left / MATCH.turnSeconds);
+      const mv = agent.pick(r, cur.s, 'O', MATCH.timed ? left / MATCH.turnSeconds : 1);
       if (mv >= 0) setM(play(cur, mv));
     }, m.round === 1 && m.lastMove < 0 ? 600 : agent.thinkMs());
     return () => clearTimeout(t);
@@ -127,7 +128,7 @@ export function Game({ sess }: { sess: Session }) {
   /* ---------- player input ---------- */
   const tap = (i: number) => {
     if (m.locked || paused || m.turn !== 'X' || m.s.cells[i]) return;
-    const rec = shadow.record(r, m.s, 'X', left / MATCH.turnSeconds, i, Date.now() - moveStart.current);
+    const rec = shadow.record(r, m.s, 'X', MATCH.timed ? left / MATCH.turnSeconds : 1, i, Date.now() - moveStart.current);
     if (!rec.forced) { style.current.moves++; style.current.hits += rec.hit; }
     commit();
     setM(play(m, i));
@@ -160,7 +161,9 @@ export function Game({ sess }: { sess: Session }) {
           <div class="tag">{rated ? `RATING ${p.rating[r.id]}` : 'YOU'}</div>
           <div class="pips">{[0, 1, 2].map((i) => <i key={i} class={'pip' + (i < m.score.X ? ' on' : '')} style={{ background: i < m.score.X ? COLORS.X : 'var(--dim)' }} />)}</div>
         </div>
-        <div class="g-clock" style={{ color: live && left <= 5 ? color : 'var(--ink)' }}>0:{String(Math.max(0, left)).padStart(2, '0')}</div>
+        {MATCH.timed
+          ? <div class="g-clock" style={{ color: live && left <= 5 ? color : 'var(--ink)' }}>0:{String(Math.max(0, left)).padStart(2, '0')}</div>
+          : <div class="g-clock" style={{ color: 'var(--dim)', fontSize: '13px', letterSpacing: '.18em' }}>·</div>}
         <div class="pl r">
           <div class="nm" style={{ color: !live ? '#fff' : !isX ? COLORS.O : 'var(--idle)' }}>{nameO}</div>
           <div class="tag">{tagO}</div>
@@ -169,7 +172,8 @@ export function Game({ sess }: { sess: Session }) {
       </div>
 
       <div class="hair" style={{ left: '28px', top: '214px', width: '364px', height: '2px' }} />
-      <div class={'abs g-bar' + (live && !paused && left <= 5 ? ' warn' : '')} style={{ width: (live ? (Math.max(0, left) / MATCH.turnSeconds) * 364 : 364) + 'px', background: color }} />
+      <div class={'abs g-bar' + (MATCH.timed && live && !paused && left <= 5 ? ' warn' : '')}
+           style={{ width: (MATCH.timed && live ? (Math.max(0, left) / MATCH.turnSeconds) * 364 : 364) + 'px', background: color }} />
       <div class="abs center g-turn swap" key={`${m.turn}-${m.round}-${live}-${paused}`}>
         {!live ? '' : paused ? <b style={{ fontWeight: 400, color: '#fff' }}>PAUSED</b>
           : <><b style={{ fontWeight: 400, color }}>{isX ? nameX : nameO}</b>&nbsp;&nbsp;TO MOVE</>}
