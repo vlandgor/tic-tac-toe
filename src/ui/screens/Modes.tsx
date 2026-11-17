@@ -1,5 +1,5 @@
 import { MODES, Classic, Reverse, Vanish } from '../../core/rules/modes';
-import { gateProgress } from '../../core/insight';
+import { AWAKE_STAGE, spiritStage } from '../../core/insight';
 import type { ModeId, Player, RuleSet, State } from '../../core/rules/types';
 import { isActive, mode, rev, screen, setMode, shadow, store } from '../../state/app';
 import { Board } from '../components/Board';
@@ -24,7 +24,7 @@ export function Modes() {
       <div class="abs center p-sub lbl2">YOUR SPIRIT LEARNS EACH ONE SEPARATELY</div>
 
       {MODES.map((r, idx) => {
-        const h = shadow.peek(r.id), fid = shadow.fidelity(r.id), g = gateProgress(h), act = isActive(r);
+        const h = shadow.peek(r.id), fid = shadow.fidelity(r.id), st = spiritStage(h), act = isActive(r);
         const s = DEMOS[r.id] ?? r.start(), t = r.terminal(s);
         return (
           <button key={r.id} class={'card stg' + (mode.value === r.id ? ' sel' : '')}
@@ -37,7 +37,7 @@ export function Modes() {
                    lineColor="rgba(255,255,255,.3)" lineWidth={1} terminal={t.over ? t : null} showWinLine />
             <div class="stats3">
               <div><div class="v">{p.rating[r.id]}</div><div class="lbl2">RATING</div></div>
-              <div><div class="v" style={{ color: act ? 'var(--orange)' : '#fff' }}>{act ? 'ACTIVE' : `${g.moves}/${g.need}`}</div><div class="lbl2">SPIRIT</div></div>
+              <div><div class="v" style={{ color: act || st.idx >= AWAKE_STAGE ? 'var(--orange)' : '#fff' }}>{st.name}</div><div class="lbl2">SPIRIT</div></div>
               <div><div class="v">{fid === null ? '—' : fid + '%'}</div><div class="lbl2">FIDELITY</div></div>
             </div>
           </button>

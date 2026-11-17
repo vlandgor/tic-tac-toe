@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'preact/hooks';
 import { challengeBoard, dailyMode, dayKey, featuredMode, msUntilNextDay, msUntilNextWeek, weekKey, yesterday } from '../../core/events';
-import { gateProgress } from '../../core/insight';
+import { spiritStage } from '../../core/insight';
 import { isActive, rev, screen, setMode, shadow, startSession, store } from '../../state/app';
 import { dailyDone, enterGauntlet, solveDaily } from '../../state/flows';
 import { COLORS } from '../components/Glyph';
@@ -76,7 +76,7 @@ export function Events() {
           {g ? `NEXT GAUNTLET IN ${fmtLeft(msUntilNextWeek())}`
             : running ? 'YOUR SPIRIT IS PLAYING…'
             : canEnter ? 'ENTER YOUR SPIRIT ›'
-            : `SPIRIT LOCKED IN ${fMode.name} · ${gateProgress(shadow.peek(fMode.id)).moves}/${gateProgress(undefined).need}`}
+            : `YOUR ${fMode.name} SPIRIT IS ${spiritStage(shadow.peek(fMode.id)).name} · WAKE IT TO ENTER`}
         </div>
       </button>
 

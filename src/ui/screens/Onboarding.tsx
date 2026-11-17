@@ -2,7 +2,8 @@ import { useEffect, useRef, useState } from 'preact/hooks';
 import { HeuristicAgent } from '../../core/agents';
 import { Classic } from '../../core/rules/modes';
 import { other, type Player, type State, type Terminal } from '../../core/rules/types';
-import { SHADOW_LIMITS } from '../../core/shadow/shadow';
+import { spiritStage } from '../../core/insight';
+import { StagePips } from '../components/StagePips';
 import { pickUnsure } from '../../core/shadow/coach';
 import { cleanName, validName } from '../../core/profile';
 import { SPIRITS, spiritDef, type SpiritId } from '../../core/spirits';
@@ -12,7 +13,6 @@ import { runCoach, runTraining } from '../../state/overlays';
 import { Board } from '../components/Board';
 import { COLORS, Glyph } from '../components/Glyph';
 import { feel } from '../feel';
-import { CountUp, useMounted } from '../feel/motion';
 
 type Step = 'welcome' | 'name' | 'spirit' | 'game' | 'learned' | 'coach' | 'ready';
 const STEPS: Step[] = ['welcome', 'name', 'spirit', 'game', 'learned', 'coach', 'ready'];
@@ -126,9 +126,7 @@ export function Onboarding() {
     screen.value = 'menu';
   };
 
-  const h = shadow.head(Classic);
-  const need = SHADOW_LIMITS.gateMoves;
-  const mounted = useMounted(250);
+  const stage = spiritStage(shadow.head(Classic));
 
   return (
     <div class="screen">
@@ -180,15 +178,13 @@ export function Onboarding() {
 
       {step === 'learned' && <>
         <div class="abs center ob-title" style={{ top: '150px' }}>IT LEARNED FROM YOU</div>
-        <div class="abs center" style={{ top: '214px', fontSize: '84px', lineHeight: '84px', color: COLORS.X }}><CountUp to={h.moves} ms={900} /></div>
-        <div class="abs center lbl" style={{ top: '312px' }}>MOVES LEARNED</div>
-        <div class="abs ob-prog">
-          <div class="top"><span>UNLOCKS AT {need} MOVES</span><span>{Math.min(h.moves, need)} / {need}</span></div>
-          <div class="track"><div class="fill" style={{ width: (mounted ? Math.min(100, (h.moves / need) * 100) : 0) + '%' }} /></div>
-        </div>
-        <div class="abs center ob-body" style={{ top: '462px' }}>
-          ONCE UNLOCKED, IT ENTERS RANKED<br />
-          AND PLAYS FOR YOU WHILE YOU'RE AWAY.<br />
+        <div class="abs center pop" style={{ top: '226px', fontSize: '40px', letterSpacing: '.18em', textIndent: '.18em', color: COLORS.O }}>{stage.name}</div>
+        <div class="abs center lbl" style={{ top: '290px' }}>{stage.line}</div>
+        <div class="abs" style={{ left: '60px', top: '340px' }}><StagePips stage={stage} width={300} height={4} /></div>
+        <div class="abs center ob-body" style={{ top: '412px' }}>
+          AS YOU PLAY, IT GROWS.<br />
+          ONCE AWAKE, IT ENTERS RANKED<br />
+          AND PLAYS AS YOU WHILE YOU'RE AWAY.<br />
           <span style={{ color: '#fff' }}>ITS RESULTS MOVE YOUR RATING.</span>
         </div>
         <div class="abs center lbl2" style={{ top: '590px', fontSize: '11px' }}>FIDELITY = HOW OFTEN IT PREDICTS YOU</div>

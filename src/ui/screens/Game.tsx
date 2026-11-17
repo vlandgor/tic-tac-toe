@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
 import { HeuristicAgent, RivalAgent, ShadowAgent, type Agent } from '../../core/agents';
-import { insight, gateProgress } from '../../core/insight';
+import { insight, spiritStage } from '../../core/insight';
 import { GENERIC_CFG, pick } from '../../core/heuristic';
 import { MATCH, matchOver, matchScore, newMatch, play, startRound, type MatchState } from '../../core/match';
 import { eloDelta } from '../../core/rating';
@@ -26,6 +26,8 @@ export function Game({ sess }: { sess: Session }) {
   const rated = sess.kind === 'rival';
   // the challenge is practice on a board the spirit never plays ranked — it learns nothing here
   const learns = sess.kind !== 'challenge';
+  // the stage the spirit started this match in — a level-up is celebrated once, when it's crossed
+  const stageAt = useRef(spiritStage(shadow.peek(r.id)).idx);
   const agent: Agent = useMemo(
     () => (sess.kind === 'challenge'
       // a plain heuristic opponent: no model, so no spirit head is created for a big board
@@ -129,17 +131,20 @@ export function Game({ sess }: { sess: Session }) {
     }
     rows.push({ k: 'STYLE MOVES PREDICTED', v: style.current.moves ? `${style.current.hits} / ${style.current.moves}` : 'NONE THIS ROUND' });
     rows.push({ k: 'STYLE FIDELITY', v: fid === null ? 'CALIBRATING' : fid + '%' });
-    rows.push({ k: 'MOVES LEARNED', v: String(h.moves) });
+    const stage = spiritStage(h), grew = stage.idx > stageAt.current;
+    stageAt.current = stage.idx;
+    rows.push({ k: 'YOUR SPIRIT', v: <span style={{ color: grew ? COLORS.X : '#fff' }}>{stage.name}{grew ? '  ↑' : ''}</span> });
+    if (grew) setTimeout(() => feel.trophy(), 450);
     if (over && coached) rows.push({ k: 'COACHED', v: `${coached} POSITIONS` });
     const how = r.id === 'reverse' && t.winner && !over ? (youWon ? ' · THEY MADE THREE' : ' · YOU MADE THREE') : '';
-    const g = gateProgress(h);
     overlay.value = { kind: 'summary', data: {
       title: over ? (drawn ? 'MATCH DRAWN' : youWon ? 'MATCH WON' : 'MATCH LOST') : (drawn ? 'ROUND DRAWN' : youWon ? 'ROUND WON' : 'ROUND LOST'),
       color: drawn ? '#fff' : youWon ? COLORS.X : COLORS.O,
       sub: over ? `${r.name} VS ${agent.name}   ${cur.score.X} — ${cur.score.O}` : `${r.name} · SERIES ${cur.score.X} — ${cur.score.O}${how}`,
       rows,
-      learned: isActive(r) ? insight(h, r)
-        : `SPIRIT UNLOCKS FOR MATCHMAKING AT ${g.need} MOVES  ·  ${g.moves} / ${g.need}${g.needsStyle ? '  ·  NEEDS MORE CHOICE MOVES' : ''}`,
+      learned: grew ? `YOUR SPIRIT IS NOW ${stage.name}  ·  ${stage.line}`
+        : isActive(r) ? insight(h, r)
+        : stage.line,
       primary: over
         ? { label: 'PLAY AGAIN', run: () => { closeOverlay(); if (rated) screen.value = 'search'; else startSession(sess.kind, sess.rival, sess.modeId); } }
         : { label: 'NEXT ROUND', run: () => { closeOverlay(); style.current = { hits: 0, moves: 0 }; setM(startRound(mRef.current)); } },

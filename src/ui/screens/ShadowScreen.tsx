@@ -1,5 +1,5 @@
 import { useState } from 'preact/hooks';
-import { gateProgress } from '../../core/insight';
+import { AWAKE_STAGE, spiritStage } from '../../core/insight';
 import { lossCount } from '../../core/profile';
 import { MODES, modeById } from '../../core/rules/modes';
 import type { ModeId } from '../../core/rules/types';
@@ -7,6 +7,7 @@ import { pct, type Ratio } from '../../core/shadow/shadow';
 import { isActive, mode, rev, shadow, store } from '../../state/app';
 import { coachLosses } from '../../state/flows';
 import { COLORS } from '../components/Glyph';
+import { StagePips } from '../components/StagePips';
 import { CountUp, useMounted } from '../feel/motion';
 
 const signed = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n);
@@ -31,7 +32,7 @@ export function ShadowScreen() {
   const r = MODES.find((m) => m.id === view)!;
   const cycle = (d: number) => setView(MODES[(MODES.indexOf(r) + d + MODES.length) % MODES.length].id);
   const h = shadow.head(r), fid = shadow.fidelity(r.id), tempo = shadow.tempo();
-  const active = isActive(r), gate = gateProgress(h), losses = lossCount(p);
+  const active = isActive(r), stage = spiritStage(h), losses = lossCount(p);
   const log = p.away.slice(0, 3);
 
   return (
@@ -46,7 +47,7 @@ export function ShadowScreen() {
         </button>
       </div>
       <div class="abs center" style={{ top: '130px', fontSize: '13px', letterSpacing: '.18em', color: active ? COLORS.X : 'var(--ink)' }}>
-        {active ? 'IN MATCHMAKING · PLAYING AS YOU' : `LOCKED · ${gate.moves} / ${gate.need} MOVES${gate.needsStyle ? ' · NEEDS CHOICE MOVES' : ''}`}
+        {active ? 'IN MATCHMAKING · PLAYING AS YOU' : stage.line}
       </div>
       <div class="abs center h-fid" style={{ top: '158px' }} key={r.id}>{fid === null ? '—' : <><CountUp to={fid} ms={800} />%</>}</div>
       <div class="abs center lbl" style={{ top: '254px' }}>STYLE FIDELITY</div>
@@ -60,7 +61,10 @@ export function ShadowScreen() {
       </div>
       <div class="abs h-stats" style={{ top: '528px' }}>
         <div class="st"><div class="v">{p.rating[r.id]}</div><div class="lbl2">RATING</div></div>
-        <div class="st"><div class="v">{h.moves}</div><div class="lbl2">MOVES</div></div>
+        <div class="st">
+          <div class="v stage-v" style={{ color: stage.idx >= AWAKE_STAGE ? COLORS.X : '#fff' }}>{stage.name}</div>
+          <StagePips stage={stage} width={64} />
+        </div>
         <div class="st"><div class="v">{h.coached}</div><div class="lbl2">COACHED</div></div>
         <div class="st"><div class="v">{tempo ? tempo.toFixed(1) + 's' : '—'}</div><div class="lbl2">TEMPO</div></div>
       </div>

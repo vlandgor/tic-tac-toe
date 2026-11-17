@@ -1,9 +1,10 @@
 import { dailyMode, dayKey, msUntilNextDay, yesterday } from '../../core/events';
-import { gateProgress } from '../../core/insight';
+import { AWAKE_STAGE, spiritStage } from '../../core/insight';
 import { isActive, rev, rules, screen, shadow, store } from '../../state/app';
 import { dailyDone, solveDaily } from '../../state/flows';
 import { overlay } from '../../state/overlays';
 import { MiniBoard } from '../components/MiniBoard';
+import { StagePips } from '../components/StagePips';
 import { fmtLeft } from './Events';
 
 /**
@@ -17,7 +18,7 @@ export function Menu() {
   rev.value; // re-render on model/profile changes
   const r = rules.value, p = store.profile;
   const h = shadow.peek(r.id), fid = shadow.fidelity(r.id);
-  const active = isActive(r), gate = gateProgress(h);
+  const active = isActive(r), stage = spiritStage(h);
 
   const day = dayKey(), done = dailyDone(), dMode = dailyMode(day);
   const streak = p.daily.last === day || p.daily.last === yesterday(day) ? p.daily.streak : 0;
@@ -47,7 +48,10 @@ export function Menu() {
       <div class="hair" style={{ left: '44px', top: '520px', width: '332px' }} />
       <div class="abs pm-stats">
         <div class="st"><div class="v">{p.rating[r.id]}</div><div class="lbl2">RATING</div></div>
-        <div class="st"><div class="v">{h?.moves ?? 0}</div><div class="lbl2">MOVES</div></div>
+        <div class="st">
+          <div class="v stage-v" style={{ color: stage.idx >= AWAKE_STAGE ? 'var(--orange)' : '#fff' }}>{stage.name}</div>
+          <StagePips stage={stage} width={78} />
+        </div>
         <div class="st"><div class="v o">{fid === null ? '—' : fid + '%'}</div><div class="lbl2">FIDELITY</div></div>
       </div>
 
@@ -68,9 +72,7 @@ export function Menu() {
 
       {/* quiet footer */}
       <div class="abs center pf-note" style={active ? { color: 'var(--orange)' } : undefined}>
-        {active
-          ? `SPIRIT ACTIVE · IT PLAYS RANKED ${r.name} AS YOU`
-          : `SPIRIT UNLOCKS AT ${gate.need} MOVES · ${gate.moves} SO FAR`}
+        {active ? `YOUR SPIRIT PLAYS RANKED ${r.name} AS YOU` : stage.line}
       </div>
     </div>
   );

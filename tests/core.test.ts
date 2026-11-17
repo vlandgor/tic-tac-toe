@@ -4,7 +4,8 @@ import { geometry, winLength } from '../src/core/rules/board';
 import { challengeBoard } from '../src/core/events';
 import { tactics } from '../src/core/tactics';
 import { eloDelta, makeRivals, matchmake } from '../src/core/rating';
-import { Shadow } from '../src/core/shadow/shadow';
+import { Shadow, SHADOW_LIMITS } from '../src/core/shadow/shadow';
+import { AWAKE_STAGE, STAGES, spiritStage } from '../src/core/insight';
 import { newMatch, play, matchOver } from '../src/core/match';
 import { simulateAway, awayMatchesFor } from '../src/core/away';
 import { defaultProfile } from '../src/core/profile';
@@ -279,5 +280,51 @@ describe('big boards', () => {
   it('a save left on a big board comes back to 3x3', () => {
     const p = normalizeProfile({ mode: 'vanish7' } as any);
     expect(p.mode).toBe('vanish');
+  });
+});
+
+/* ---------------- spirit growth stages ---------------- */
+describe('spirit stages', () => {
+  // a head-shaped stand-in: stages only read moves and the recent choice-move window
+  const head = (moves: number, choices = moves) => ({ moves, recent: new Array(Math.min(choices, 40)).fill(1) }) as any;
+
+  it('starts asleep, stirs on the first move', () => {
+    expect(spiritStage(undefined).name).toBe('SLEEPING');
+    expect(spiritStage(head(0)).name).toBe('SLEEPING');
+    expect(spiritStage(head(1)).name).toBe('STIRRING');
+  });
+
+  it('AWAKE lands exactly on the matchmaking gate', () => {
+    const gate = SHADOW_LIMITS.gateMoves;
+    expect(spiritStage(head(gate - 1)).name).toBe('WAKING');
+    expect(spiritStage(head(gate)).name).toBe('AWAKE');
+    expect(spiritStage(head(gate)).idx).toBe(AWAKE_STAGE);
+    // and agrees with the real eligibility rule
+    const sh = new Shadow();
+    expect(sh.eligible('classic')).toBe(false);
+  });
+
+  it('enough moves but too few real choices stays waking, bar full', () => {
+    const s = spiritStage(head(SHADOW_LIMITS.gateMoves + 20, SHADOW_LIMITS.gateStyle - 1));
+    expect(s.name).toBe('WAKING');
+    expect(s.progress).toBe(1);
+    expect(s.line).toContain('REAL CHOICES');
+  });
+
+  it('progress runs 0..1 within a stage', () => {
+    const half = spiritStage(head(SHADOW_LIMITS.gateMoves / 2 + SHADOW_LIMITS.gateMoves / 4));
+    expect(half.name).toBe('WAKING');
+    expect(half.progress).toBeCloseTo(0.5, 5);
+  });
+
+  it('the last stage is final and full', () => {
+    const s = spiritStage(head(5000));
+    expect(s.name).toBe('MIRROR');
+    expect(s.final).toBe(true);
+    expect(s.progress).toBe(1);
+  });
+
+  it('stages are strictly increasing', () => {
+    for (let i = 1; i < STAGES.length; i++) expect(STAGES[i].at).toBeGreaterThan(STAGES[i - 1].at);
   });
 });
