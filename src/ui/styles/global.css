@@ -19,7 +19,11 @@ body { font-family: var(--font); color: #fff; -webkit-user-select: none; user-se
 button { font-family: inherit; color: inherit; background: none; border: 0; cursor: pointer; }
 
 /* stage */
-.stage-wrap { height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; }
+/* the inset strips are never drawn into — the page is black, so they read as bezel */
+.stage-wrap { height: 100%; width: 100%; background: #000;
+              padding: env(safe-area-inset-top, 0px) env(safe-area-inset-right, 0px)
+                       env(safe-area-inset-bottom, 0px) env(safe-area-inset-left, 0px); }
+.stage-safe { height: 100%; width: 100%; display: flex; align-items: center; justify-content: center; }
 .stage { position: relative; width: 420px; height: 910px; flex: 0 0 auto; background: #000; overflow: hidden; transform-origin: center; }
 .screen, .ov { position: absolute; inset: 0; background: #000; }
 .ov { z-index: 40; }
