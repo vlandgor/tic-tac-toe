@@ -4,8 +4,8 @@ import { commit, screen, shadow, store } from '../../state/app';
 import { Board } from './Board';
 import { feel } from '../feel';
 
-/** Casual endless games vs your shadow on the menu. Inference only: never records, never trains. */
-export function MiniBoard({ rules }: { rules: RuleSet }) {
+/** Casual endless games vs your spirit on the menu. Inference only: never records, never trains. */
+export function MiniBoard({ rules, top = 212, cell = 62 }: { rules: RuleSet; top?: number; cell?: number }) {
   const [s, setS] = useState<State>(() => rules.start());
   const [turn, setTurn] = useState<Player>('X');
   const [term, setTerm] = useState<Terminal | null>(null);
@@ -56,7 +56,7 @@ export function MiniBoard({ rules }: { rules: RuleSet }) {
   const tap = (i: number) => { if (!term && turn === 'X' && !s.cells[i]) place(s, i, 'X'); };
 
   return (
-    <Board rules={rules} s={s} cell={62} mark={34} overhang={6} left={117} top={212}
+    <Board rules={rules} s={s} cell={cell} mark={cell * 0.55} overhang={cell * 0.1} left={210 - (cell * 3) / 2} top={top}
            lineColor="rgba(255,255,255,.32)" lineWidth={1} newIdx={last} terminal={term} fadeLosers onTap={tap} />
   );
 }
