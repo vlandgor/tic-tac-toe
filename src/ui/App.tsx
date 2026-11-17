@@ -18,6 +18,7 @@ import { Summary } from './overlays/Summary';
 import { Away } from './overlays/Away';
 import { Dev } from './overlays/Dev';
 import { SpiritSheet } from './overlays/SpiritSheet';
+import { Read } from './overlays/Read';
 import { CustomSheet, ModeSheet } from './overlays/ModeSheet';
 
 function Screen() {
@@ -42,6 +43,7 @@ function Overlay() {
     case 'summary': return <Summary data={o.data} />;
     case 'away': return <Away results={o.results} />;
     case 'spirit': return <SpiritSheet />;
+    case 'read': return <Read rules={o.rules} items={o.items} resolve={o.resolve} />;
     case 'modeSelect': return <ModeSheet />;
     case 'custom': return <CustomSheet />;
     case 'dev': return <Dev />;

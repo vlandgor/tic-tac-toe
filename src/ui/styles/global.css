@@ -123,6 +123,29 @@ svg.doom { opacity: .3; }
 .scroll::-webkit-scrollbar { display: none; }
 .scroll-inner { position: relative; }
 
+/* can it read you? */
+.rd-pips { left: 0; right: 0; top: 204px; display: flex; justify-content: center; gap: 10px; }
+.rd-pips i { width: 26px; height: 4px; background: rgba(255, 255, 255, .14); }
+.rd-pips i.cur { background: rgba(255, 255, 255, .5); }
+.rd-pips i.hit { background: var(--blue); }
+.rd-pips i.miss { background: rgba(255, 90, 30, .55); }
+.guess.hit { border-style: solid; border-width: 2px; opacity: 1; }
+.rd-score { top: 236px; font-size: 84px; line-height: 84px; color: var(--blue); }
+.rd-score span { font-size: 40px; color: var(--ink2); }
+.rd-verdict { top: 356px; font-size: 15px; letter-spacing: .2em; }
+.rh { display: flex; align-items: flex-end; justify-content: center; gap: 4px; }
+.rh i { display: block; }
+
+/* the Spirit screen's "can it read you?" block */
+.rd-card { left: 28px; width: 364px; height: 140px; border: 2px solid var(--blue); background: none; padding: 0; text-align: left; }
+.rd-card:active { background: rgba(46, 155, 255, .06); }
+.rd-card .t { position: absolute; left: 20px; top: 18px; font-size: 17px; letter-spacing: .2em; }
+.rd-card .s { position: absolute; left: 20px; top: 46px; font-size: 10px; letter-spacing: .14em; color: var(--ink2); }
+.rd-card .go { position: absolute; left: 20px; bottom: 18px; font-size: 13px; letter-spacing: .2em; color: var(--blue); }
+.rd-card .last { position: absolute; right: 20px; top: 20px; text-align: right; font-size: 10px; letter-spacing: .16em; color: var(--ink2); }
+.rd-card .last b { display: block; font-weight: 400; font-size: 26px; letter-spacing: .04em; color: #fff; margin-top: 6px; }
+.rd-card .hist { position: absolute; right: 20px; bottom: 18px; }
+
 /* discoveries — habits the spirit has noticed */
 .disc-head { left: 36px; width: 348px; display: flex; justify-content: space-between; }
 .disc-head .lbl2 { font-size: 11px; }

@@ -1,12 +1,13 @@
 import { describe, expect, it } from 'vitest';
 import { ALL_MODES, Classic, EVENT_BOARDS, MODES, Reverse, Vanish, modeById } from '../src/core/rules/modes';
-import { geometry, winLength } from '../src/core/rules/board';
+import { geometry, stateKey, winLength } from '../src/core/rules/board';
 import { challengeBoard } from '../src/core/events';
 import { tactics } from '../src/core/tactics';
 import { eloDelta, makeRivals, matchmake } from '../src/core/rating';
 import { Shadow, SHADOW_LIMITS } from '../src/core/shadow/shadow';
 import { AWAKE_STAGE, STAGES, spiritStage } from '../src/core/insight';
 import { detectDiscoveries, foundFor } from '../src/core/discoveries';
+import { pickReads, readVerdict, recordRead, READ_HISTORY, READ_ROUND } from '../src/core/reads';
 import { newMatch, play, matchOver } from '../src/core/match';
 import { simulateAway, awayMatchesFor } from '../src/core/away';
 import { defaultProfile } from '../src/core/profile';
@@ -389,5 +390,52 @@ describe('discoveries', () => {
   it('old saves get an empty collection', () => {
     const p = normalizeProfile({ name: 'OLD' } as any);
     expect(p.discoveries).toEqual({});
+  });
+});
+
+/* ---------------- can it read you? ---------------- */
+describe('reads', () => {
+  for (const rules of MODES) {
+    it(`${rules.name}: five fair positions, each a real choice with a sealed legal guess`, () => {
+      const sh = new Shadow();
+      const items = pickReads(sh, rules);
+      expect(items.length).toBe(READ_ROUND);
+      const keys = new Set(items.map((x) => stateKey(x.s)));
+      expect(keys.size).toBe(items.length);                         // no repeats in a round
+      for (const x of items) {
+        expect(rules.terminal(x.s).over).toBe(false);
+        const t = tactics(rules, x.s, 'X');
+        expect(t.forced).toBe(false);                               // no "obvious" moves
+        expect(t.legal.length).toBeGreaterThanOrEqual(2);
+        expect(rules.legal(x.s)).toContain(x.guess);                // the guess is a real move
+      }
+    });
+  }
+
+  it('the guess is made before the answer can teach it', () => {
+    const sh = new Shadow();
+    const [item] = pickReads(sh, Classic, 1);
+    const before = item.guess;
+    // teach it the opposite of its guess, many times
+    const other = Classic.legal(item.s).find((m) => m !== before)!;
+    for (let i = 0; i < 30; i++) sh.coach(Classic, item.s, other);
+    expect(item.guess).toBe(before);                                // the sealed guess never changes
+  });
+
+  it('verdicts', () => {
+    expect(readVerdict(5)).toBe('IT READ YOU PERFECTLY');
+    expect(readVerdict(4)).toBe('IT KNOWS YOU WELL');
+    expect(readVerdict(3)).toBe("IT'S GETTING THERE");
+    expect(readVerdict(2)).toBe('STILL LEARNING YOU');
+    expect(readVerdict(0)).toBe('YOU KEPT IT GUESSING');
+  });
+
+  it('history: returns the previous score and keeps only the recent ones', () => {
+    const reads: any = {};
+    expect(recordRead(reads, 'classic', 2)).toBe(null);
+    expect(recordRead(reads, 'classic', 4)).toBe(2);
+    for (let i = 0; i < 20; i++) recordRead(reads, 'classic', 3);
+    expect(reads.classic.length).toBe(READ_HISTORY);
+    expect(reads.vanish).toBeUndefined();                           // per mode
   });
 });

@@ -6,6 +6,7 @@ import type { RuleSet } from '../core/rules/types';
 import { trainHead } from '../train/trainer';
 import { commit, shadow, store } from './app';
 import { detectDiscoveries, type FoundDiscovery } from '../core/discoveries';
+import { pickReads, recordRead, type ReadItem } from '../core/reads';
 
 export interface SummaryRow { k: string; v: ComponentChildren; }
 export interface SummaryData {
@@ -25,6 +26,7 @@ export type Overlay =
   | { kind: 'summary'; data: SummaryData }
   | { kind: 'away'; results: AwayResult[] }
   | { kind: 'spirit' }
+  | { kind: 'read'; rules: RuleSet; items: ReadItem[]; resolve: (answers: number[]) => void }
   | { kind: 'modeSelect' }
   | { kind: 'custom' }
   | { kind: 'dev' };
@@ -58,6 +60,27 @@ export async function runTraining(rules: RuleSet): Promise<void> {
 /** discoveries found since the last time a screen claimed them — the match summary announces these */
 const lastFound: FoundDiscovery[] = [];
 export const takeFound = (): FoundDiscovery[] => lastFound.splice(0, lastFound.length);
+
+/**
+ * "Can it read you?": the spirit seals a guess for each position, you answer,
+ * and your answers then teach it. Resolves with the number it read correctly.
+ */
+export async function runRead(rules: RuleSet): Promise<{ hits: number; answered: number }> {
+  const items = pickReads(shadow, rules);
+  if (!items.length) return { hits: 0, answered: 0 };
+  const answers = await new Promise<number[]>((resolve) => {
+    overlay.value = { kind: 'read', rules, items, resolve: (a) => { overlay.value = null; resolve(a); } };
+  });
+  // learn from the answers only now — every guess above was already sealed
+  answers.forEach((mv, i) => { if (mv >= 0) shadow.coach(rules, items[i].s, mv); });
+  const answered = answers.filter((a) => a >= 0).length;
+  const hits = answers.filter((a, i) => a >= 0 && a === items[i].guess).length;
+  // only a full round goes on the record, so quitting early can't skew the history
+  if (answered === items.length) recordRead(store.profile.reads, rules.id, hits);
+  commit();
+  if (answered) await runTraining(rules);
+  return { hits, answered };
+}
 
 export async function runTrainingMany(list: RuleSet[]): Promise<void> {
   for (const r of list) await runTraining(r);
