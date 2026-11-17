@@ -1,5 +1,5 @@
 import { GENERIC_CFG, heuristicMove } from './heuristic';
-import { MODES } from './rules/modes';
+import { EVENT_BOARDS, MODES } from './rules/modes';
 import { other, type Player, type RuleSet, type State } from './rules/types';
 import { tactics } from './tactics';
 import { hashString, seeded } from './rng';
@@ -40,6 +40,15 @@ export function msUntilNextWeek(d = new Date()): number {
 export const dailyMode = (day: string): RuleSet => MODES[hashString('daily:' + day) % MODES.length];
 /** the week's featured mode — the Gauntlet is played in it */
 export const featuredMode = (week: string): RuleSet => MODES[hashString('week:' + week) % MODES.length];
+
+/**
+ * The week's Board Challenge: one of the big boards (5x5 or 7x7), rotating
+ * weekly. You play it yourself against a rival spirit. It is unrated and your
+ * spirit neither records nor trains from it — the big boards are a side dish,
+ * not part of the ladder.
+ */
+export const challengeBoard = (week: string): RuleSet =>
+  EVENT_BOARDS[hashString('board:' + week) % EVENT_BOARDS.length];
 
 /* ---------------- daily coach puzzle ---------------- */
 export interface Puzzle { day: string; rules: RuleSet; s: State; }

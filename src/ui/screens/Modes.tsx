@@ -10,7 +10,7 @@ function demo(rules: RuleSet, moves: [number, Player][]): State {
   for (const [i, p] of moves) s = rules.apply(s, i, p);
   return s;
 }
-const DEMOS: Record<ModeId, State> = {
+const DEMOS: Partial<Record<ModeId, State>> = {
   classic: demo(Classic, [[0, 'X'], [2, 'O'], [4, 'X'], [6, 'O'], [8, 'X']]),
   vanish: demo(Vanish, [[2, 'X'], [0, 'O'], [4, 'X'], [8, 'O'], [7, 'X'], [6, 'O']]),
   reverse: demo(Reverse, [[4, 'X'], [0, 'O'], [8, 'X'], [1, 'O'], [6, 'X'], [2, 'O']]),
@@ -26,7 +26,7 @@ export function Modes() {
 
       {MODES.map((r, idx) => {
         const h = shadow.peek(r.id), fid = shadow.fidelity(r.id), g = gateProgress(h), act = isActive(r);
-        const s = DEMOS[r.id], t = r.terminal(s);
+        const s = DEMOS[r.id] ?? r.start(), t = r.terminal(s);
         return (
           <button key={r.id} class={'card stg' + (mode.value === r.id ? ' sel' : '')}
                   style={{ top: 120 + idx * 196 + 'px', height: '180px', '--i': idx } as any}

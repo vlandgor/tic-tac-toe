@@ -21,7 +21,13 @@ export type Screen = 'onboarding' | 'menu' | 'modes' | 'events' | 'shadow' | 'ra
 export const TAB_SCREENS: Screen[] = ['modes', 'events', 'menu', 'shadow', 'ranks'];
 export const screen = signal<Screen>('menu');
 
-export interface Session { id: number; kind: 'rival' | 'mirror'; rival?: RivalProfile; }
+export interface Session {
+  id: number;
+  kind: 'rival' | 'mirror' | 'challenge';
+  rival?: RivalProfile;
+  /** challenge sessions play a big board that is not the player's selected mode */
+  modeId?: ModeId;
+}
 export const session = signal<Session | null>(null);
 
 export const mode = signal<ModeId>('classic');
@@ -45,7 +51,7 @@ export function setMode(id: ModeId): void {
 }
 
 let sessionSeq = 1;
-export function startSession(kind: Session['kind'], rival?: RivalProfile): void {
-  session.value = { id: sessionSeq++, kind, rival };
+export function startSession(kind: Session['kind'], rival?: RivalProfile, modeId?: ModeId): void {
+  session.value = { id: sessionSeq++, kind, rival, modeId };
   screen.value = 'game';
 }

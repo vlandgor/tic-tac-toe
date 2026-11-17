@@ -1,5 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { Classic, Reverse, Vanish, MODES } from '../src/core/rules/modes';
+import { ALL_MODES, Classic, EVENT_BOARDS, MODES, Reverse, Vanish, modeById } from '../src/core/rules/modes';
+import { geometry, winLength } from '../src/core/rules/board';
+import { challengeBoard } from '../src/core/events';
 import { tactics } from '../src/core/tactics';
 import { eloDelta, makeRivals, matchmake } from '../src/core/rating';
 import { Shadow } from '../src/core/shadow/shadow';
@@ -194,5 +196,88 @@ describe('onboarding', () => {
     let s = Classic.start();
     let p: Player = 'O';
     while (!Classic.terminal(s).over) { const mv = g.pick(Classic, s, p); expect(s.cells[mv]).toBeNull(); s = Classic.apply(s, mv, p); p = p === 'X' ? 'O' : 'X'; }
+  });
+});
+
+/* ---------------- N x N boards and the Board Challenge ---------------- */
+describe('big boards', () => {
+  it('geometry: line counts and landmarks', () => {
+    const g3 = geometry(3, 3);
+    expect(g3.lines.length).toBe(8);
+    expect(g3.center).toBe(4);
+    expect(g3.corners).toEqual([0, 2, 6, 8]);
+
+    const g5 = geometry(5, 4);
+    expect(g5.size).toBe(25);
+    expect(g5.center).toBe(12);
+    // every line is exactly k long and stays on the board
+    for (const l of g5.lines) {
+      expect(l.length).toBe(4);
+      for (const i of l) expect(i).toBeGreaterThanOrEqual(0), expect(i).toBeLessThan(25);
+    }
+  });
+
+  it('win length scales with the board', () => {
+    expect(winLength(3)).toBe(3);
+    expect(winLength(5)).toBe(4);
+    expect(winLength(7)).toBe(5);
+  });
+
+  it('5x5 classic: four in a row wins, three does not', () => {
+    const c5 = modeById('classic5');
+    expect(c5.n).toBe(5);
+    const three = playSeq(c5, [[0, 'X'], [10, 'O'], [1, 'X'], [11, 'O'], [2, 'X']]);
+    expect(c5.terminal(three).over).toBe(false);
+    const four = c5.apply(playSeq(c5, [[0, 'X'], [10, 'O'], [1, 'X'], [11, 'O'], [2, 'X'], [12, 'O']]), 3, 'X');
+    const t = c5.terminal(four);
+    expect(t.over).toBe(true);
+    expect(t.winner).toBe('X');
+    expect(t.line).toEqual([0, 1, 2, 3]);
+  });
+
+  it('7x7 classic: a diagonal of five wins', () => {
+    const c7 = modeById('classic7');
+    let s = c7.start();
+    for (let i = 0; i < 4; i++) { s = c7.apply(s, i * 8, 'X'); s = c7.apply(s, 42 + i, 'O'); }
+    expect(c7.terminal(s).over).toBe(false);
+    s = c7.apply(s, 32, 'X');
+    expect(c7.terminal(s).winner).toBe('X');
+  });
+
+  it('vanish keeps k marks per side, scaled by board', () => {
+    const v5 = modeById('vanish5');
+    let s = v5.start();
+    for (const i of [0, 1, 2, 3]) s = v5.apply(s, i, 'X');
+    expect(s.q.X.length).toBe(4);     // 5x5 keeps 4
+    s = v5.apply(s, 4, 'X');
+    expect(s.q.X.length).toBe(4);
+    expect(s.cells[0]).toBe(null);    // the oldest faded
+    expect(v5.doomed(s, 'X')).toBe(1);
+  });
+
+  it('encoders match their declared length on every board', () => {
+    for (const r of ALL_MODES) {
+      expect(r.encode(r.start(), 'X', 1).length).toBe(r.encodeLen);
+      expect(r.actions).toBe(r.n * r.n);
+    }
+  });
+
+  it('regular play is 3x3 only; big boards are event boards', () => {
+    expect(MODES.every((m) => m.n === 3)).toBe(true);
+    expect(MODES.length).toBe(3);
+    expect(EVENT_BOARDS.every((m) => m.n > 3)).toBe(true);
+    expect(ALL_MODES.length).toBe(9);
+  });
+
+  it('the week board rotates and is always a big board', () => {
+    const a = challengeBoard('2026-W46'), b = challengeBoard('2026-W47');
+    expect(a.n).toBeGreaterThan(3);
+    expect(b.n).toBeGreaterThan(3);
+    expect(challengeBoard('2026-W46').id).toBe(a.id); // stable within a week
+  });
+
+  it('a save left on a big board comes back to 3x3', () => {
+    const p = normalizeProfile({ mode: 'vanish7' } as any);
+    expect(p.mode).toBe('vanish');
   });
 });

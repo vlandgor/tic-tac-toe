@@ -42,11 +42,11 @@ svg.doom { opacity: .3; }
 @keyframes dash { to { stroke-dashoffset: 0; } }
 
 /* boards — size via CSS var --c (cell px) */
-.board { position: absolute; width: calc(var(--c) * 3); height: calc(var(--c) * 3); }
+.board { position: absolute; width: calc(var(--c) * var(--n, 3)); height: calc(var(--c) * var(--n, 3)); }
 .board .ln { position: absolute; background: var(--line, rgba(255, 255, 255, .4)); }
-.board .ln.v { width: var(--lw, 1.5px); top: calc(var(--ov) * -1); height: calc(var(--c) * 3 + var(--ov) * 2); }
-.board .ln.h { height: var(--lw, 1.5px); left: calc(var(--ov) * -1); width: calc(var(--c) * 3 + var(--ov) * 2); }
-.board .cells { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(3, var(--c)); grid-template-rows: repeat(3, var(--c)); }
+.board .ln.v { width: var(--lw, 1.5px); top: calc(var(--ov) * -1); height: calc(var(--c) * var(--n, 3) + var(--ov) * 2); }
+.board .ln.h { height: var(--lw, 1.5px); left: calc(var(--ov) * -1); width: calc(var(--c) * var(--n, 3) + var(--ov) * 2); }
+.board .cells { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(var(--n, 3), var(--c)); grid-template-rows: repeat(var(--n, 3), var(--c)); }
 .cell { position: relative; width: var(--c); height: var(--c); display: flex; align-items: center; justify-content: center; }
 .cell svg { width: var(--m); height: var(--m); transition: opacity .3s; }
 .cell.fade svg { opacity: .18; }

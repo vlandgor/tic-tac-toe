@@ -1,7 +1,7 @@
 import { argmax, entropy, MLP, sampleFrom } from '../nn/mlp';
 import { fit, type Sample } from '../nn/train';
 import { corpus, GENERIC_CFG } from '../heuristic';
-import { isCorner, stateKey } from '../rules/board';
+import { geometry, stateKey } from '../rules/board';
 import { MODES } from '../rules/modes';
 import type { ModeId, Player, RuleSet, State } from '../rules/types';
 import { tactics } from '../tactics';
@@ -118,8 +118,9 @@ export class Shadow {
       if (this.latency.length > SHADOW_LIMITS.latency) this.latency.shift();
     }
     const T = h.traits;
-    if (s.ply === 0) { T.centerOpen[1]++; if (chosen === 4) T.centerOpen[0]++; }
-    T.corner[1]++; if (isCorner(chosen)) T.corner[0]++;
+    const g = geometry(rules.n, rules.k);
+    if (s.ply === 0) { T.centerOpen[1]++; if (chosen === g.center) T.centerOpen[0]++; }
+    T.corner[1]++; if (g.isCorner(chosen)) T.corner[0]++;
     if (tac.wins.length) { T.finish[1]++; if (tac.wins.includes(chosen)) T.finish[0]++; }
     else if (tac.blocks.length) { T.block[1]++; if (tac.blocks.includes(chosen)) T.block[0]++; }
     return { hit, forced: tac.forced };

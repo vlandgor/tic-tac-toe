@@ -1,6 +1,8 @@
 export type Player = 'X' | 'O';
 export type Cell = Player | null;
-export type ModeId = 'classic' | 'vanish' | 'reverse';
+export type Variant = 'classic' | 'vanish' | 'reverse';
+/** board sizes beyond 3x3 suffix the id: `classic5`, `vanish7`, … */
+export type ModeId = Variant | `${Variant}5` | `${Variant}7`;
 
 /** Board state shared by every 3x3 ruleset. `q` keeps placement order per player. */
 export interface State {
@@ -23,8 +25,13 @@ export interface Terminal {
  */
 export interface RuleSet {
   id: ModeId;
+  variant: Variant;
   name: string;
   blurb: string;
+  /** board edge length: 3, 5 or 7 */
+  n: number;
+  /** marks in a row needed to complete a line */
+  k: number;
   /** length of the tensor produced by encode() */
   encodeLen: number;
   /** number of discrete actions */

@@ -1,4 +1,4 @@
-import { MODES } from './rules/modes';
+import { MODES, toRegular } from './rules/modes';
 import type { ModeId, State } from './rules/types';
 import { makeRivals, START_RATING } from './rating';
 import type { RivalProfile } from './agents';
@@ -22,6 +22,9 @@ export interface Settings { sound: boolean; haptics: boolean; }
 export interface DailyState { last: string | null; streak: number; best: number; }
 
 export interface GauntletMatch { stage: 'SEMIFINAL' | 'FINAL'; rival: string; score: string; won: boolean; }
+
+/** your record in this week's Board Challenge — unrated, reset each week */
+export interface ChallengeState { week: string; mode: ModeId; w: number; l: number; d: number; }
 export interface GauntletResult { week: string; mode: ModeId; placement: 1 | 2 | 3; matches: GauntletMatch[]; }
 
 /** Everything about the player that isn't the shadow model itself. */
@@ -40,6 +43,7 @@ export interface Profile {
   mini: MiniScore;
   daily: DailyState;
   gauntlet: GauntletResult | null;
+  challenge: ChallengeState | null;
   trophies: number;
   /** finished the first-run flow */
   onboarded: boolean;
@@ -53,7 +57,7 @@ export function defaultProfile(): Profile {
   for (const m of MODES) { rating[m.id] = START_RATING; lossQ[m.id] = []; }
   return { name: 'PLAYER', spirit: DEFAULT_SPIRIT, mode: 'classic', rating, rivals: makeRivals(), lastRival: null, lastSeen: 0,
            away: [], lossQ, mini: { w: 0, l: 0, d: 0 }, daily: { last: null, streak: 0, best: 0 },
-           gauntlet: null, trophies: 0, onboarded: false, settings: { sound: true, haptics: true },
+           gauntlet: null, challenge: null, trophies: 0, onboarded: false, settings: { sound: true, haptics: true },
            ignoreGate: false };
 }
 
@@ -68,6 +72,8 @@ export function normalizeProfile(p: Partial<Profile>): Profile {
     if (!out.lossQ[m.id]) out.lossQ[m.id] = [];
   }
   if (!out.rivals?.length) out.rivals = d.rivals;
+  // a save left on a big board (an old build, or a Board Challenge) returns to 3x3
+  if (!MODES.some((m) => m.id === out.mode)) out.mode = toRegular(out.mode);
   // saves from before spirits existed get the default animal
   if (!out.spirit) out.spirit = DEFAULT_SPIRIT;
   return out;

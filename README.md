@@ -1,8 +1,8 @@
 # Tic Tac Toe — Shadow
 
-Your shadow is a small neural net that learns how *you* play. It represents you in
+Your spirit is a small neural net that learns how *you* play. It represents you in
 ranked matchmaking while you're away, its results move your rating, and its losses come
-back to you as coaching positions.
+back to you as coaching positions. You pick an animal avatar for it at first run.
 
 ## Run
 
@@ -18,7 +18,7 @@ npm run build    # production build -> dist/
 ```
 src/
   core/                 pure TypeScript, no DOM — portable to a server later
-    rules/              RuleSet seam: types, board helpers, Classic / Vanish / Reverse
+    rules/              RuleSet seam: types, N×N geometry, Classic / Vanish / Reverse × 3/5/7
     tactics.ts          generic win/block/forced detection by simulation (any ruleset)
     nn/mlp.ts           tiny MLP, masked softmax over legal moves
     nn/train.ts         training epoch shared by the worker and the inline fallback
@@ -42,7 +42,11 @@ tests/                  vitest on the core engine
 ### Key rules
 - **Fidelity is prequential and choice-only**: the shadow predicts before each of your
   moves; forced moves (wins, blocks, only-safe-move) don't count.
-- **One rating per mode**, shared by you and your shadow.
+- **One rating per mode**, shared by you and your spirit.
+- **Board sizes**: the engine runs every variant on 3×3 (3 in a row), 5×5 (4) and 7×7 (5).
+  Regular play (`MODES`: ratings, spirits, ranks) is 3×3 only; the big boards (`EVENT_BOARDS`)
+  are the weekly **Board Challenge** — unrated, and your spirit does not learn from it.
+- **Matches are untimed** (`MATCH.timed`), since opponents are spirits, not live players.
 - **Gate**: a shadow enters matchmaking in a mode after 60 moves and 10 choice moves.
 - **Adding a mode** = implement `RuleSet` (and register it in `core/rules/modes.ts`).
   The shadow, tactics, coaching and training need no changes.

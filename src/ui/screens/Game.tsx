@@ -1,10 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'preact/hooks';
-import { RivalAgent, ShadowAgent, type Agent } from '../../core/agents';
+import { HeuristicAgent, RivalAgent, ShadowAgent, type Agent } from '../../core/agents';
 import { insight, gateProgress } from '../../core/insight';
-import { pick } from '../../core/heuristic';
+import { GENERIC_CFG, pick } from '../../core/heuristic';
 import { MATCH, matchOver, matchScore, newMatch, play, startRound, type MatchState } from '../../core/match';
 import { eloDelta } from '../../core/rating';
 import { pickUnsure } from '../../core/shadow/coach';
+import { modeById } from '../../core/rules/modes';
+import { weekKey } from '../../core/events';
 import { commit, isActive, rivalModels, rules, screen, shadow, startSession, store, type Session } from '../../state/app';
 import { closeOverlay, overlay, runCoach, runTraining, type SummaryRow } from '../../state/overlays';
 import { Board } from '../components/Board';
@@ -14,11 +16,21 @@ import { CountUp } from '../feel/motion';
 
 const signed = (n: number) => (n > 0 ? '+' : n < 0 ? '−' : '±') + Math.abs(n);
 
+/** every board, whatever its size, fills the same square on the stage */
+const BOARD_PX = 330;
+
 export function Game({ sess }: { sess: Session }) {
-  const r = rules.value, p = store.profile;
+  const p = store.profile;
+  // a Board Challenge brings its own big board; everything else uses the selected mode
+  const r = sess.modeId ? modeById(sess.modeId) : rules.value;
   const rated = sess.kind === 'rival';
+  // the challenge is practice on a board the spirit never plays ranked — it learns nothing here
+  const learns = sess.kind !== 'challenge';
   const agent: Agent = useMemo(
-    () => (rated ? new RivalAgent(sess.rival!, rivalModels) : new ShadowAgent(shadow)), [sess.id]);
+    () => (sess.kind === 'challenge'
+      // a plain heuristic opponent: no model, so no spirit head is created for a big board
+      ? new HeuristicAgent('CHALLENGER', GENERIC_CFG, [500, 1400])
+      : sess.rival ? new RivalAgent(sess.rival, rivalModels) : new ShadowAgent(shadow)), [sess.id]);
 
   const [m, setM] = useState<MatchState>(() => newMatch(r));
   const [left, setLeft] = useState<number>(MATCH.turnSeconds);
@@ -87,10 +99,20 @@ export function Game({ sess }: { sess: Session }) {
       rv.rating[r.id] -= delta;
       commit();
     }
+    if (over && sess.kind === 'challenge') {
+      const wk = weekKey();
+      const cur = p.challenge && p.challenge.week === wk && p.challenge.mode === r.id
+        ? p.challenge : { week: wk, mode: r.id, w: 0, l: 0, d: 0 };
+      if (m.score.X > m.score.O) cur.w++;
+      else if (m.score.X < m.score.O) cur.l++;
+      else cur.d++;
+      p.challenge = cur;
+      commit();
+    }
     const t = setTimeout(async () => {
       let coached = 0;
-      if (over) coached = (await runCoach(pickUnsure(shadow, r, 2))).answered;
-      await runTraining(r);
+      if (over && learns) coached = (await runCoach(pickUnsure(shadow, r, 2))).answered;
+      if (learns) await runTraining(r);
       if (alive.current) showSummary(over, delta, coached);
     }, 700);
     return () => clearTimeout(t);
@@ -119,7 +141,7 @@ export function Game({ sess }: { sess: Session }) {
       learned: isActive(r) ? insight(h, r)
         : `SPIRIT UNLOCKS FOR MATCHMAKING AT ${g.need} MOVES  ·  ${g.moves} / ${g.need}${g.needsStyle ? '  ·  NEEDS MORE CHOICE MOVES' : ''}`,
       primary: over
-        ? { label: 'PLAY AGAIN', run: () => { closeOverlay(); if (rated) screen.value = 'search'; else startSession('mirror'); } }
+        ? { label: 'PLAY AGAIN', run: () => { closeOverlay(); if (rated) screen.value = 'search'; else startSession(sess.kind, sess.rival, sess.modeId); } }
         : { label: 'NEXT ROUND', run: () => { closeOverlay(); style.current = { hits: 0, moves: 0 }; setM(startRound(mRef.current)); } },
       secondary: { label: 'MENU', run: () => { closeOverlay(); screen.value = 'menu'; } },
     } };
@@ -128,8 +150,10 @@ export function Game({ sess }: { sess: Session }) {
   /* ---------- player input ---------- */
   const tap = (i: number) => {
     if (m.locked || paused || m.turn !== 'X' || m.s.cells[i]) return;
-    const rec = shadow.record(r, m.s, 'X', MATCH.timed ? left / MATCH.turnSeconds : 1, i, Date.now() - moveStart.current);
-    if (!rec.forced) { style.current.moves++; style.current.hits += rec.hit; }
+    const rec = learns
+      ? shadow.record(r, m.s, 'X', MATCH.timed ? left / MATCH.turnSeconds : 1, i, Date.now() - moveStart.current)
+      : { hit: false as boolean, forced: true };
+    if (!rec.forced) { style.current.moves++; style.current.hits += rec.hit ? 1 : 0; }
     commit();
     setM(play(m, i));
     if (rec.hit && !rec.forced) {
@@ -150,7 +174,7 @@ export function Game({ sess }: { sess: Session }) {
       <button class="ico" style={{ left: '14px' }} aria-label="Back" onClick={() => (screen.value = 'menu')}>
         <svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 9H2M9 2 2 9l7 7" /></svg>
       </button>
-      <div class="abs center g-tag lbl2">{r.name} · ROUND {m.round} · {rated ? 'RANKED' : 'UNRATED'}</div>
+      <div class="abs center g-tag lbl2">{r.name} · ROUND {m.round} · {rated ? 'RANKED' : sess.kind === 'challenge' ? 'CHALLENGE · UNRATED' : 'UNRATED'}</div>
       <button class="ico" style={{ right: '14px' }} aria-label="Pause" onClick={() => live && setPaused((v) => !v)}>
         <svg width="14" height="16" viewBox="0 0 14 16" fill="#fff"><rect width="4" height="16" /><rect x="10" width="4" height="16" /></svg>
       </button>
@@ -179,7 +203,7 @@ export function Game({ sess }: { sess: Session }) {
           : <><b style={{ fontWeight: 400, color }}>{isX ? nameX : nameO}</b>&nbsp;&nbsp;TO MOVE</>}
       </div>
 
-      <Board rules={r} s={m.s} cell={110} mark={64} overhang={16} left={45} top={320}
+      <Board rules={r} s={m.s} cell={BOARD_PX / r.n} mark={(BOARD_PX / r.n) * 0.58} overhang={(BOARD_PX / r.n) * 0.145} left={45} top={320}
              newIdx={m.lastMove} hint={live && isX && !paused ? 'X' : null} terminal={m.terminal} showWinLine
              onTap={tap} decorate={(i) => <i class={'pred' + (predCell === i ? ' on' : '')} />} />
 

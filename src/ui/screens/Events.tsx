@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'preact/hooks';
-import { dailyMode, dayKey, featuredMode, msUntilNextDay, msUntilNextWeek, weekKey, yesterday } from '../../core/events';
+import { challengeBoard, dailyMode, dayKey, featuredMode, msUntilNextDay, msUntilNextWeek, weekKey, yesterday } from '../../core/events';
 import { gateProgress } from '../../core/insight';
-import { isActive, rev, screen, setMode, shadow, store } from '../../state/app';
+import { isActive, rev, screen, setMode, shadow, startSession, store } from '../../state/app';
 import { dailyDone, enterGauntlet, solveDaily } from '../../state/flows';
 import { COLORS } from '../components/Glyph';
 import { feel } from '../feel';
@@ -15,7 +15,8 @@ const PLACE = { 1: 'CHAMPION', 2: 'RUNNER-UP', 3: 'KNOCKED OUT' } as const;
 export function Events() {
   rev.value;
   const p = store.profile, day = dayKey(), week = weekKey();
-  const dMode = dailyMode(day), fMode = featuredMode(week);
+  const dMode = dailyMode(day), fMode = featuredMode(week), cBoard = challengeBoard(week);
+  const ch = p.challenge?.week === week && p.challenge.mode === cBoard.id ? p.challenge : null;
   const done = dailyDone();
   const g = p.gauntlet?.week === week ? p.gauntlet : null;
   const canEnter = isActive(fMode);
@@ -77,6 +78,17 @@ export function Events() {
             : running ? 'YOUR SPIRIT IS PLAYING…'
             : canEnter ? 'ENTER YOUR SPIRIT ›'
             : `SPIRIT LOCKED IN ${fMode.name} · ${gateProgress(shadow.peek(fMode.id)).moves}/${gateProgress(undefined).need}`}
+        </div>
+      </button>
+
+      {/* weekly board challenge — the only place the big boards are played */}
+      <button class="card stg" style={{ top: '694px', height: '120px', '--i': 3 } as any}
+              onClick={() => startSession('challenge', undefined, cBoard.id)}>
+        <div class="ct">BOARD CHALLENGE</div>
+        <div class="cr">{cBoard.n}×{cBoard.n}<br /><span style={{ color: 'var(--ink2)', fontSize: '11px' }}>{cBoard.k} IN A ROW</span></div>
+        <div class="cs">{cBoard.name} · UNRATED · YOUR SPIRIT SITS IT OUT</div>
+        <div class="cx o">
+          {ch ? `${ch.w}W ${ch.l}L ${ch.d}D · PLAY AGAIN ›` : 'PLAY ›'}
         </div>
       </button>
 

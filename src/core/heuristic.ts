@@ -1,4 +1,4 @@
-import { isCorner, isEdge } from './rules/board';
+import { geometry } from './rules/board';
 import { other, type Player, type RuleSet } from './rules/types';
 import { tactics } from './tactics';
 import type { Sample } from './nn/train';
@@ -36,9 +36,15 @@ export function heuristicMove(
   if (t.wins.length && rnd() < cfg.finish) return pick(t.wins, rnd);
   if (t.blocks.length && rnd() < cfg.block) return pick(t.blocks, rnd);
   const pool = t.safe.length && rnd() < cfg.finish ? t.safe : legal;
-  if (pool.includes(4) && rnd() < cfg.center) return 4;
-  const corners = pool.filter(isCorner), edges = pool.filter(isEdge);
+  const g = geometry(rules.n, rules.k);
+  if (pool.includes(g.center) && rnd() < cfg.center) return g.center;
+  const corners = pool.filter((i) => g.isCorner(i)), edges = pool.filter((i) => g.isEdge(i));
   if (corners.length && rnd() < cfg.corner) return pick(corners, rnd);
+  // on a big board, loose moves are wasted — stay next to marks already placed
+  if (g.n > 3) {
+    const near = pool.filter((i) => g.neighbours[i].some((j) => s.cells[j]));
+    if (near.length && rnd() < 0.9) return pick(near, rnd);
+  }
   if (edges.length && rnd() < 0.75) return pick(edges, rnd);
   return pick(pool, rnd);
 }
