@@ -13,8 +13,9 @@ export function fmtLeft(ms: number): string {
 }
 const PLACE = { 1: 'CHAMPION', 2: 'RUNNER-UP', 3: 'KNOCKED OUT' } as const;
 
-/** frame y where the last card ends (board challenge: 694 + 120), plus a bottom margin */
-const EVENTS_END = 694 + 120 + 24;
+/** the board challenge is the last card: two subtitle lines above its PLAY link need 150px */
+const CHALLENGE_TOP = 694, CHALLENGE_H = 150;
+const EVENTS_END = CHALLENGE_TOP + CHALLENGE_H + 24;
 
 export function Events() {
   rev.value;
@@ -81,12 +82,12 @@ export function Events() {
           {g ? `NEXT GAUNTLET IN ${fmtLeft(msUntilNextWeek())}`
             : running ? 'YOUR SPIRIT IS PLAYING…'
             : canEnter ? 'ENTER YOUR SPIRIT ›'
-            : `YOUR ${fMode.name} SPIRIT IS ${spiritStage(shadow.peek(fMode.id)).name} · WAKE IT TO ENTER`}
+            : `${spiritStage(shadow.peek(fMode.id)).name} · WAKE IT TO ENTER`}
         </div>
       </button>
 
       {/* weekly board challenge — the only place the big boards are played */}
-      <button class="card stg" style={{ top: '694px', height: '120px', '--i': 3 } as any}
+      <button class="card stg" style={{ top: CHALLENGE_TOP + 'px', height: CHALLENGE_H + 'px', '--i': 3 } as any}
               onClick={() => startSession('challenge', undefined, cBoard.id)}>
         <div class="ct">BOARD CHALLENGE</div>
         <div class="cr">{cBoard.n}×{cBoard.n}<br /><span style={{ color: 'var(--ink2)', fontSize: '11px' }}>{cBoard.k} IN A ROW</span></div>
