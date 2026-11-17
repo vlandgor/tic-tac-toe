@@ -64,10 +64,15 @@ svg.doom { opacity: .3; }
 .tbtn { position: absolute; left: 0; right: 0; text-align: center; height: 52px; font-size: 15px; letter-spacing: .18em; color: var(--ink); }
 
 /* ---------------- MENU ---------------- */
-.m-avatar { left: 24px; top: 40px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: none; border: 0; padding: 0; }
-.m-name { left: 74px; top: 42px; font-size: 20px; letter-spacing: .16em; }
-.m-status { left: 74px; top: 72px; }
-.m-gear { right: 20px; top: 40px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; opacity: .75; }
+/* shared personal bar on every tab screen — mirrors .nav */
+.topbar { position: absolute; left: 0; right: 0; top: 0; height: 64px; background: #000;
+          border-bottom: 1px solid var(--hair); z-index: 5; }
+.topbar .av { position: absolute; left: 20px; top: 15px; width: 34px; height: 34px; padding: 0;
+              background: none; border: 0; display: flex; align-items: center; justify-content: center; }
+.topbar .nm { position: absolute; left: 62px; top: 14px; font-size: 17px; letter-spacing: .16em; }
+.topbar .st { position: absolute; left: 62px; top: 39px; font-size: 10px; letter-spacing: .2em; color: var(--ink2); }
+.topbar .gear { position: absolute; right: 16px; top: 15px; width: 34px; height: 34px; padding: 0;
+                background: none; border: 0; display: flex; align-items: center; justify-content: center; opacity: .75; }
 .m-title { top: 140px; font-size: 48px; letter-spacing: .08em; line-height: 52px; }
 .m-rule { left: 50%; transform: translateX(-50%); top: 212px; width: 100px; }
 .m-score { top: 230px; font-size: 14px; letter-spacing: .14em; color: var(--ink); }
@@ -175,8 +180,7 @@ svg.doom { opacity: .3; }
 .d-msg { left: 36px; right: 36px; top: 560px; text-align: center; font-size: 13px; letter-spacing: .1em; color: var(--blue); line-height: 22px; }
 
 /* ---------------- TAB PAGES ---------------- */
-.p-head { top: 50px; font-size: 18px; letter-spacing: .3em; text-indent: .3em; }
-.p-sub { top: 82px; }
+.p-sub { top: 80px; }
 .card { position: absolute; left: 28px; width: 364px; border: 1px solid var(--hair); text-align: left; }
 .card.sel { border: 1.5px solid var(--orange); }
 .card:active { background: rgba(255, 255, 255, .03); }

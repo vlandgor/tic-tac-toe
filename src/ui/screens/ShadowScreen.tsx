@@ -36,7 +36,7 @@ export function ShadowScreen() {
 
   return (
     <div class="screen">
-      <div class="abs selrow" style={{ top: '30px' }}>
+      <div class="abs selrow" style={{ top: '70px' }}>
         <button class="arr" aria-label="Previous mode" onClick={() => cycle(-1)}>
           <svg width="11" height="18" viewBox="0 0 12 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M10 2 2 10l8 8" /></svg>
         </button>
@@ -45,33 +45,33 @@ export function ShadowScreen() {
           <svg width="11" height="18" viewBox="0 0 12 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M2 2l8 8-8 8" /></svg>
         </button>
       </div>
-      <div class="abs center" style={{ top: '90px', fontSize: '13px', letterSpacing: '.18em', color: active ? COLORS.X : 'var(--ink)' }}>
+      <div class="abs center" style={{ top: '130px', fontSize: '13px', letterSpacing: '.18em', color: active ? COLORS.X : 'var(--ink)' }}>
         {active ? 'IN MATCHMAKING · PLAYING AS YOU' : `LOCKED · ${gate.moves} / ${gate.need} MOVES${gate.needsStyle ? ' · NEEDS CHOICE MOVES' : ''}`}
       </div>
-      <div class="abs center h-fid" style={{ top: '118px' }} key={r.id}>{fid === null ? '—' : <><CountUp to={fid} ms={800} />%</>}</div>
-      <div class="abs center lbl" style={{ top: '214px' }}>STYLE FIDELITY</div>
-      <div class="abs center h-note" style={{ top: '236px' }}>CHOICE MOVES ONLY · FORCED MOVES EXCLUDED</div>
+      <div class="abs center h-fid" style={{ top: '158px' }} key={r.id}>{fid === null ? '—' : <><CountUp to={fid} ms={800} />%</>}</div>
+      <div class="abs center lbl" style={{ top: '254px' }}>STYLE FIDELITY</div>
+      <div class="abs center h-note" style={{ top: '276px' }}>CHOICE MOVES ONLY · FORCED MOVES EXCLUDED</div>
 
-      <div class="abs h-traits" style={{ top: '274px' }}>
+      <div class="abs h-traits" style={{ top: '314px' }}>
         <Trait key={r.id + 'c'} k="OPENS CENTER" r={h.traits.centerOpen} />
         <Trait key={r.id + 'k'} k="PLAYS CORNERS" r={h.traits.corner} />
         <Trait key={r.id + 'b'} k="BLOCKS THREATS" r={h.traits.block} />
         <Trait key={r.id + 'f'} k="TAKES THE WIN" r={h.traits.finish} />
       </div>
-      <div class="abs h-stats" style={{ top: '488px' }}>
+      <div class="abs h-stats" style={{ top: '528px' }}>
         <div class="st"><div class="v">{p.rating[r.id]}</div><div class="lbl2">RATING</div></div>
         <div class="st"><div class="v">{h.moves}</div><div class="lbl2">MOVES</div></div>
         <div class="st"><div class="v">{h.coached}</div><div class="lbl2">COACHED</div></div>
         <div class="st"><div class="v">{tempo ? tempo.toFixed(1) + 's' : '—'}</div><div class="lbl2">TEMPO</div></div>
       </div>
       {losses > 0 && (
-        <button class="tbtn" style={{ top: '558px', height: '44px', color: COLORS.X, letterSpacing: '.16em' }} onClick={coachLosses}>
+        <button class="tbtn" style={{ top: '598px', height: '44px', color: COLORS.X, letterSpacing: '.16em' }} onClick={coachLosses}>
           COACH FROM LOSSES · {Math.min(losses, 4)}
         </button>
       )}
 
-      <div class="abs lbl2" style={{ left: '36px', top: '618px', fontSize: '11px' }}>PLAYED AS YOU</div>
-      <div class="abs rows" style={{ top: '640px' }}>
+      <div class="abs lbl2" style={{ left: '36px', top: '658px', fontSize: '11px' }}>PLAYED AS YOU</div>
+      <div class="abs rows" style={{ top: '680px' }}>
         {log.length ? log.map((a, i) => {
           const c = a.res === 'W' ? COLORS.X : a.res === 'L' ? COLORS.O : '#fff';
           return (

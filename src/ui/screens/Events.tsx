@@ -36,7 +36,6 @@ export function Events() {
 
   return (
     <div class="screen">
-      <div class="abs center p-head">EVENTS</div>
       <div class="abs center p-sub lbl2">NEW PUZZLE DAILY · NEW GAUNTLET WEEKLY</div>
 
       {/* daily coach puzzle */}
@@ -86,7 +85,8 @@ export function Events() {
               onClick={() => startSession('challenge', undefined, cBoard.id)}>
         <div class="ct">BOARD CHALLENGE</div>
         <div class="cr">{cBoard.n}×{cBoard.n}<br /><span style={{ color: 'var(--ink2)', fontSize: '11px' }}>{cBoard.k} IN A ROW</span></div>
-        <div class="cs">{cBoard.name} · UNRATED · YOUR SPIRIT SITS IT OUT</div>
+        <div class="cs">{cBoard.name} · UNRATED</div>
+        <div class="cs" style={{ top: '80px' }}>YOUR SPIRIT SITS THIS ONE OUT</div>
         <div class="cx o">
           {ch ? `${ch.w}W ${ch.l}L ${ch.d}D · PLAY AGAIN ›` : 'PLAY ›'}
         </div>

@@ -1,31 +1,15 @@
-import { gateProgress } from '../../core/insight';
-import { isActive, rev, rules, screen, shadow, startSession, store } from '../../state/app';
+import { rev, rules, screen, shadow, startSession, store } from '../../state/app';
 import { overlay } from '../../state/overlays';
 import { MiniBoard } from '../components/MiniBoard';
-import { SpiritIcon } from '../components/SpiritIcon';
 import { dailyDone, solveDaily } from '../../state/flows';
 
 export function Menu() {
   rev.value; // re-render on model/profile changes
   const r = rules.value, p = store.profile;
-  const h = shadow.peek(r.id), fid = shadow.fidelity(r.id), active = isActive(r);
-  const gate = gateProgress(h);
+  const h = shadow.peek(r.id), fid = shadow.fidelity(r.id);
 
   return (
     <div class="screen">
-      <button class="abs m-avatar" aria-label="Change your spirit" onClick={() => (overlay.value = { kind: 'spirit' })}>
-        <SpiritIcon id={p.spirit} size={34} color={active ? 'var(--orange)' : 'var(--blue)'} />
-      </button>
-      <div class="abs m-name">{p.name}</div>
-      <div class="abs m-status lbl2" style={active ? { color: 'var(--orange)' } : undefined}>
-        {active ? `SPIRIT ACTIVE · ${r.name}` : `SPIRIT LOCKED · ${gate.moves}/${gate.need}`}
-      </div>
-      <button class="abs m-gear" aria-label="Developer" onClick={() => (overlay.value = { kind: 'dev' })}>
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4">
-          <circle cx="12" cy="12" r="3.2" /><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9 7 7M17 17l2.1 2.1M19.1 4.9 17 7M7 17l-2.1 2.1" />
-        </svg>
-      </button>
-
       <div class="abs center m-title"><span class="o">TIC</span> <span class="b">TAC</span> <span class="o">TOE</span></div>
       <div class="hair m-rule" />
       <div class="abs center m-score">

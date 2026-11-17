@@ -16,7 +16,6 @@ export function Ranks() {
 
   return (
     <div class="screen">
-      <div class="abs center p-head">RANKS</div>
       <div class="abs selrow" style={{ top: '82px' }}>
         <button class="arr" aria-label="Previous mode" onClick={() => cycle(-1)}>
           <svg width="11" height="18" viewBox="0 0 12 20" fill="none" stroke="#fff" stroke-width="1.6"><path d="M10 2 2 10l8 8" /></svg>

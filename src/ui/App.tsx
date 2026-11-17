@@ -3,6 +3,7 @@ import { ready, screen, session, TAB_SCREENS, type Screen as ScreenId } from '..
 import { overlay } from '../state/overlays';
 import { Stage } from './components/Stage';
 import { BottomNav } from './components/BottomNav';
+import { TopBar } from './components/TopBar';
 import { Menu } from './screens/Menu';
 import { Search } from './screens/Search';
 import { Game } from './screens/Game';
@@ -67,7 +68,7 @@ export function App() {
     <Stage>
       {ready.value ? <>
         <div class={'scr ' + dir.current} key={key}><Screen /></div>
-        {TAB_SCREENS.includes(cur) && <BottomNav />}
+        {TAB_SCREENS.includes(cur) && <><TopBar /><BottomNav /></>}
         <Overlay />
       </> : null}
     </Stage>

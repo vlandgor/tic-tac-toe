@@ -21,7 +21,6 @@ export function Modes() {
   const p = store.profile;
   return (
     <div class="screen">
-      <div class="abs center p-head">MODES</div>
       <div class="abs center p-sub lbl2">YOUR SPIRIT LEARNS EACH ONE SEPARATELY</div>
 
       {MODES.map((r, idx) => {
