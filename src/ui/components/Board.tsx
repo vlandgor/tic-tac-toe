@@ -17,6 +17,8 @@ interface Props {
   showWinLine?: boolean;
   onTap?: (i: number) => void;
   decorate?: (i: number) => ComponentChildren;
+  /** colour marks by who placed them rather than by symbol (warm-up board: orange is always you) */
+  tint?: Record<Player, string>;
 }
 
 /** Any N×N board, any ruleset. Marks that fade on their owner's next move are dimmed. */
@@ -32,7 +34,7 @@ export function Board(p: Props) {
     const [x1, y1] = center(line[0]), [x2, y2] = center(line[line.length - 1]);
     const dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy) || 1, e = c * 0.31;
     win = { x1: x1 - (dx / L) * e, y1: y1 - (dy / L) * e, x2: x2 + (dx / L) * e, y2: y2 + (dy / L) * e,
-            color: COLORS[p.terminal.maker] };
+            color: (p.tint ?? COLORS)[p.terminal.maker] };
   }
   const style = {
     left: p.left + 'px', top: p.top + 'px', '--c': c + 'px', '--m': p.mark + 'px', '--ov': p.overhang + 'px',
@@ -55,8 +57,9 @@ export function Board(p: Props) {
                     + (win && line!.includes(i) ? ' won' : '')}
                   onClick={() => p.onTap?.(i)}>
             {p.decorate?.(i)}
-            {v && i === p.newIdx && <i class={'ripple ' + v} key={'rp' + p.s.ply} />}
-            {v ? <Glyph p={v} anim={i === p.newIdx} doom={i === dX || i === dO} />
+            {v && i === p.newIdx && <i class="ripple" key={'rp' + p.s.ply}
+                                        style={{ borderColor: (p.tint ?? COLORS)[v], borderRadius: v === 'O' ? '50%' : undefined }} />}
+            {v ? <Glyph p={v} anim={i === p.newIdx} doom={i === dX || i === dO} color={p.tint?.[v]} />
                : p.hint ? <Glyph p={p.hint} hint /> : null}
           </button>
         ))}
