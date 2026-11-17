@@ -174,7 +174,7 @@ export function Game({ sess }: { sess: Session }) {
       <button class="ico" style={{ left: '14px' }} aria-label="Back" onClick={() => (screen.value = 'menu')}>
         <svg width="22" height="18" viewBox="0 0 22 18" fill="none" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 9H2M9 2 2 9l7 7" /></svg>
       </button>
-      <div class="abs center g-tag lbl2">{r.name} · ROUND {m.round} · {rated ? 'RANKED' : sess.kind === 'challenge' ? 'CHALLENGE · UNRATED' : 'UNRATED'}</div>
+      <div class="abs center g-tag lbl2">{r.name} · ROUND {m.round} · {rated ? 'RANKED' : sess.kind === 'challenge' ? 'CHALLENGE' : 'UNRATED'}</div>
       <button class="ico" style={{ right: '14px' }} aria-label="Pause" onClick={() => live && setPaused((v) => !v)}>
         <svg width="14" height="16" viewBox="0 0 14 16" fill="#fff"><rect width="4" height="16" /><rect x="10" width="4" height="16" /></svg>
       </button>

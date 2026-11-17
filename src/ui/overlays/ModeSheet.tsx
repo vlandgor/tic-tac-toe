@@ -24,7 +24,7 @@ function ModeRows({ current, onPick }: { current: ModeId | null; onPick: (id: Mo
 export function ModeSheet() {
   rev.value;
   return (
-    <Sheet title="SELECT MODE" sub="RANKED · YOUR SPIRIT LEARNS EACH MODE SEPARATELY">
+    <Sheet title="SELECT MODE" sub="RANKED · EACH MODE IS LEARNED SEPARATELY">
       <ModeRows current={mode.value} onPick={(id) => { setMode(id); closeOverlay(); }} />
       <button class="sheet-more lbl2" onClick={() => { closeOverlay(); screen.value = 'modes'; }}>
         FULL MODE DETAILS ›
@@ -37,7 +37,7 @@ export function ModeSheet() {
 export function CustomSheet() {
   rev.value;
   return (
-    <Sheet title="CUSTOM GAME" sub="UNRATED · AGAINST YOUR OWN SPIRIT · NOTHING AT STAKE">
+    <Sheet title="CUSTOM GAME" sub="UNRATED · AGAINST YOUR OWN SPIRIT">
       <ModeRows current={null} onPick={(id) => { setMode(id); closeOverlay(); startSession('mirror'); }} />
     </Sheet>
   );
