@@ -1,10 +1,10 @@
 import { awayMatchesFor, simulateAway } from '../core/away';
 import { completeDaily, dailyPuzzle, dayKey, featuredMode, runGauntlet, weekKey } from '../core/events';
-import type { GauntletResult } from '../core/profile';
-import { MODES } from '../core/rules/modes';
+import { defaultProfile, type GauntletResult } from '../core/profile';
+import { MODES, modeById } from '../core/rules/modes';
 import { makeRivals, START_RATING } from '../core/rating';
 import type { CoachItem } from '../core/shadow/coach';
-import { loadAll, wipeShadow } from '../storage/persist';
+import { loadAll, wipeAll, wipeShadow } from '../storage/persist';
 import { commit, isActive, mode, ready, rivalModels, screen, shadow, store } from './app';
 import { overlay, runCoach, runTraining, runTrainingMany } from './overlays';
 
@@ -78,6 +78,21 @@ export async function resetShadow(): Promise<void> {
   await wipeShadow(shadow);
   for (const m of MODES) store.profile.lossQ[m.id] = [];
   shadow.head(MODES.find((m) => m.id === mode.value)!);
+  commit();
+}
+
+/**
+ * Back to a factory-fresh install: no spirit, no profile, no stored keys, and
+ * straight into onboarding at the first step. For testing the flow end to end.
+ */
+export async function fullReset(): Promise<void> {
+  await wipeAll(shadow);
+  store.profile = defaultProfile();
+  rivalModels.clear();
+  mode.value = store.profile.mode;
+  shadow.head(modeById(mode.value));
+  overlay.value = null;
+  screen.value = 'onboarding';
   commit();
 }
 

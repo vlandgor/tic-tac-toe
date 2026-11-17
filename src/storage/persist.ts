@@ -69,6 +69,19 @@ export async function wipeShadow(sh: Shadow): Promise<void> {
   await kvDel(K_SHADOW);
 }
 
+/** every key the prototype wrote — a full reset must clear these too, or the
+ *  legacy migration below restores the old save on the next load */
+const LEGACY_KEYS = ['ttt_shadow_v2', 'ttt_shadow_v1', 'ttt_profile_v1', 'ttt_mode', 'ttt_mini_score_v1'];
+
+/** wipe everything: the spirit, the profile and any prototype leftovers */
+export async function wipeAll(sh: Shadow): Promise<void> {
+  sh.reset();
+  await Promise.all([kvDel(K_SHADOW), kvDel(K_PROFILE)]);
+  for (const k of LEGACY_KEYS) {
+    try { localStorage.removeItem(k); } catch { /* storage may be unavailable */ }
+  }
+}
+
 /* ---------------- legacy localStorage (prototype) ---------------- */
 function readLS<T>(k: string): T | null {
   try { const r = localStorage.getItem(k); return r ? (JSON.parse(r) as T) : null; } catch { return null; }

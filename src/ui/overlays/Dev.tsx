@@ -1,6 +1,6 @@
 import { useState } from 'preact/hooks';
 import { commit, rev, screen, store } from '../../state/app';
-import { resetRatings, resetShadow, simulateNow } from '../../state/flows';
+import { fullReset, resetRatings, resetShadow, simulateNow } from '../../state/flows';
 import { closeOverlay } from '../../state/overlays';
 import { feel } from '../feel';
 
@@ -9,7 +9,7 @@ export function Dev() {
   rev.value;
   const p = store.profile;
   const [msg, setMsg] = useState('');
-  const [armed, setArmed] = useState(false);
+  const [armed, setArmed] = useState<'' | 'spirit' | 'full'>('');
   const toggle = (k: 'sound' | 'haptics') => {
     p.settings = { ...p.settings, [k]: !p.settings[k] };
     commit();
@@ -36,12 +36,18 @@ export function Dev() {
         </button>
         <button onClick={() => { resetRatings(); setMsg('RATINGS AND RIVAL POOL RESET'); }}>RESET RATINGS</button>
         <button onClick={() => { closeOverlay(); screen.value = 'onboarding'; }}>REPLAY ONBOARDING</button>
-        <button style={armed ? { color: 'var(--orange)' } : undefined} onClick={() => {
-          if (!armed) { setArmed(true); setTimeout(() => setArmed(false), 3000); return; }
-          setArmed(false); void resetShadow(); setMsg('SPIRIT ERASED IN ALL MODES');
-        }}>{armed ? 'TAP AGAIN TO ERASE YOUR SPIRIT' : 'RESET SPIRIT (ALL MODES)'}</button>
+        <button style={armed === 'spirit' ? { color: 'var(--orange)' } : undefined} onClick={() => {
+          if (armed !== 'spirit') { setArmed('spirit'); setTimeout(() => setArmed(''), 3000); return; }
+          setArmed(''); void resetShadow(); setMsg('SPIRIT ERASED IN ALL MODES');
+        }}>{armed === 'spirit' ? 'TAP AGAIN TO ERASE YOUR SPIRIT' : 'RESET SPIRIT (ALL MODES)'}</button>
+        <button style={armed === 'full' ? { color: 'var(--orange)' } : undefined} onClick={() => {
+          if (armed !== 'full') { setArmed('full'); setTimeout(() => setArmed(''), 3000); return; }
+          setArmed('');
+          closeOverlay();
+          void fullReset();
+        }}>{armed === 'full' ? 'TAP AGAIN — ERASES EVERYTHING' : 'FULL RESET (START FROM SCRATCH)'}</button>
       </div>
-      <div class="abs d-msg" style={{ top: '650px' }}>{msg}</div>
+      <div class="abs d-msg" style={{ top: '706px' }}>{msg}</div>
       <button class="tbtn" style={{ bottom: '96px' }} onClick={closeOverlay}>CLOSE</button>
     </div>
   );
