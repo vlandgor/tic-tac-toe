@@ -23,7 +23,7 @@ export function Away({ results }: { results: AwayResult[] }) {
   return (
     <div class="ov" style={{ zIndex: 42 }}>
       <div class="abs center a-title">WHILE YOU WERE AWAY</div>
-      <div class="abs center a-sub">YOUR SHADOW PLAYED {results.length} MATCH{results.length > 1 ? 'ES' : ''}&nbsp;&nbsp;·&nbsp;&nbsp;{w}W {l}L</div>
+      <div class="abs center a-sub">YOUR SPIRIT PLAYED {results.length} MATCH{results.length > 1 ? 'ES' : ''}&nbsp;&nbsp;·&nbsp;&nbsp;{w}W {l}L</div>
       <div class="abs center a-delta" style={{ color: total > 0 ? COLORS.X : total < 0 ? COLORS.O : '#fff' }}><CountUp to={total} ms={1000} signed /></div>
       <div class="abs center a-rating lbl">{modes.map((id) => `${modeById(id).name} ${p.rating[id]}`).join('   ·   ')}</div>
       <div class="abs rows" style={{ top: '340px' }}>

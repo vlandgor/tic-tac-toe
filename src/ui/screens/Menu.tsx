@@ -3,6 +3,7 @@ import { gateProgress } from '../../core/insight';
 import { isActive, rev, rules, screen, setMode, shadow, startSession, store } from '../../state/app';
 import { overlay } from '../../state/overlays';
 import { MiniBoard } from '../components/MiniBoard';
+import { SpiritIcon } from '../components/SpiritIcon';
 import { dailyDone, solveDaily } from '../../state/flows';
 
 export function Menu() {
@@ -14,9 +15,12 @@ export function Menu() {
 
   return (
     <div class="screen">
+      <button class="abs m-avatar" aria-label="Change your spirit" onClick={() => (overlay.value = { kind: 'spirit' })}>
+        <SpiritIcon id={p.spirit} size={34} color={active ? 'var(--orange)' : 'var(--blue)'} />
+      </button>
       <div class="abs m-name">{p.name}</div>
       <div class="abs m-status lbl2" style={active ? { color: 'var(--orange)' } : undefined}>
-        {active ? `SHADOW ACTIVE · ${r.name}` : `SHADOW LOCKED · ${gate.moves}/${gate.need}`}
+        {active ? `SPIRIT ACTIVE · ${r.name}` : `SPIRIT LOCKED · ${gate.moves}/${gate.need}`}
       </div>
       <button class="abs m-gear" aria-label="Developer" onClick={() => (overlay.value = { kind: 'dev' })}>
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.4">
@@ -28,7 +32,7 @@ export function Menu() {
       <div class="hair m-rule" />
       <div class="abs center m-score">
         <span class="o">YOU</span> <span class="n">{p.mini.w}</span>&nbsp;&nbsp;·&nbsp;&nbsp;DRAW <span class="n">{p.mini.d}</span>
-        &nbsp;&nbsp;·&nbsp;&nbsp;<span class="n">{p.mini.l}</span> <span class="b">SHADOW</span>
+        &nbsp;&nbsp;·&nbsp;&nbsp;<span class="n">{p.mini.l}</span> <span class="b">SPIRIT</span>
       </div>
       <MiniBoard rules={r} />
 

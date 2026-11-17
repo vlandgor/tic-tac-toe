@@ -24,7 +24,7 @@ export function simulateAway(
 ): AwayResult[] {
   const modes = MODES.filter(isActive);
   if (!modes.length) return [];
-  const me = new ShadowAgent(shadow, 'SHADOW', 0.8);
+  const me = new ShadowAgent(shadow, 'SPIRIT', 0.8);
   const results: AwayResult[] = [];
   for (let k = 0; k < n; k++) {
     const rules = pick(modes);

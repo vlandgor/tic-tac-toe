@@ -2,6 +2,7 @@ import { MODES } from './rules/modes';
 import type { ModeId, State } from './rules/types';
 import { makeRivals, START_RATING } from './rating';
 import type { RivalProfile } from './agents';
+import { DEFAULT_SPIRIT, type SpiritId } from './spirits';
 
 export interface LossPosition { s: State; mv: number; }
 
@@ -26,6 +27,8 @@ export interface GauntletResult { week: string; mode: ModeId; placement: 1 | 2 |
 /** Everything about the player that isn't the shadow model itself. */
 export interface Profile {
   name: string;
+  /** the animal the player chose for their spirit — cosmetic only */
+  spirit: SpiritId;
   mode: ModeId;
   /** one rating per mode — you and your shadow share it */
   rating: Record<ModeId, number>;
@@ -48,7 +51,7 @@ export function defaultProfile(): Profile {
   const rating = {} as Record<ModeId, number>;
   const lossQ = {} as Record<ModeId, LossPosition[]>;
   for (const m of MODES) { rating[m.id] = START_RATING; lossQ[m.id] = []; }
-  return { name: 'PLAYER', mode: 'classic', rating, rivals: makeRivals(), lastRival: null, lastSeen: 0,
+  return { name: 'PLAYER', spirit: DEFAULT_SPIRIT, mode: 'classic', rating, rivals: makeRivals(), lastRival: null, lastSeen: 0,
            away: [], lossQ, mini: { w: 0, l: 0, d: 0 }, daily: { last: null, streak: 0, best: 0 },
            gauntlet: null, trophies: 0, onboarded: false, settings: { sound: true, haptics: true },
            ignoreGate: false };
@@ -65,6 +68,8 @@ export function normalizeProfile(p: Partial<Profile>): Profile {
     if (!out.lossQ[m.id]) out.lossQ[m.id] = [];
   }
   if (!out.rivals?.length) out.rivals = d.rivals;
+  // saves from before spirits existed get the default animal
+  if (!out.spirit) out.spirit = DEFAULT_SPIRIT;
   return out;
 }
 

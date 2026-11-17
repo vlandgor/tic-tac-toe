@@ -101,7 +101,7 @@ export function runGauntlet(shadow: Shadow, profile: Profile, models: RivalModel
     .sort((a, b) => Math.abs(a.rating[rules.id] - my) - Math.abs(b.rating[rules.id] - my))
     .slice(0, 3);
   shadow.head(rules);
-  const me = new ShadowAgent(shadow, 'SHADOW', 0.8);
+  const me = new ShadowAgent(shadow, 'SPIRIT', 0.8);
   const matches: GauntletMatch[] = [];
 
   const semi = decisive(rules, me, new RivalAgent(r0, models));

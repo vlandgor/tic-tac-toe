@@ -23,6 +23,7 @@ export type Overlay =
   | { kind: 'train'; rules: RuleSet; epoch: number; epochs: number; loss: number }
   | { kind: 'summary'; data: SummaryData }
   | { kind: 'away'; results: AwayResult[] }
+  | { kind: 'spirit' }
   | { kind: 'dev' };
 
 export const overlay = signal<Overlay | null>(null);

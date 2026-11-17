@@ -22,7 +22,7 @@ export function Modes() {
   return (
     <div class="screen">
       <div class="abs center p-head">MODES</div>
-      <div class="abs center p-sub lbl2">YOUR SHADOW LEARNS EACH ONE SEPARATELY</div>
+      <div class="abs center p-sub lbl2">YOUR SPIRIT LEARNS EACH ONE SEPARATELY</div>
 
       {MODES.map((r, idx) => {
         const h = shadow.peek(r.id), fid = shadow.fidelity(r.id), g = gateProgress(h), act = isActive(r);
@@ -38,7 +38,7 @@ export function Modes() {
                    lineColor="rgba(255,255,255,.3)" lineWidth={1} terminal={t.over ? t : null} showWinLine />
             <div class="stats3">
               <div><div class="v">{p.rating[r.id]}</div><div class="lbl2">RATING</div></div>
-              <div><div class="v" style={{ color: act ? 'var(--orange)' : '#fff' }}>{act ? 'ACTIVE' : `${g.moves}/${g.need}`}</div><div class="lbl2">SHADOW</div></div>
+              <div><div class="v" style={{ color: act ? 'var(--orange)' : '#fff' }}>{act ? 'ACTIVE' : `${g.moves}/${g.need}`}</div><div class="lbl2">SPIRIT</div></div>
               <div><div class="v">{fid === null ? '—' : fid + '%'}</div><div class="lbl2">FIDELITY</div></div>
             </div>
           </button>

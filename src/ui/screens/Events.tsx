@@ -43,7 +43,7 @@ export function Events() {
         <div class="ct">DAILY PUZZLE</div>
         <div class="cr"><span class="o">STREAK {p.daily.last === day || p.daily.last === yesterday(day) ? p.daily.streak : 0}</span><br /><span style={{ color: 'var(--ink2)', fontSize: '11px' }}>BEST {p.daily.best}</span></div>
         <div class="cs">{dMode.name} · WHAT WOULD YOU PLAY?</div>
-        <div class="cs" style={{ top: '80px' }}>IT TRAINS YOUR SHADOW</div>
+        <div class="cs" style={{ top: '80px' }}>IT TRAINS YOUR SPIRIT</div>
         <div class="cx" style={{ color: done ? 'var(--ink)' : COLORS.X }}>
           {done ? `SOLVED · NEXT IN ${fmtLeft(msUntilNextDay())}` : 'SOLVE ›'}
         </div>
@@ -51,9 +51,9 @@ export function Events() {
 
       {/* weekly shadow gauntlet */}
       <button class={'card stg' + (!g && canEnter ? ' sel' : '')} style={{ top: '292px', height: '250px', '--i': 1 } as any} onClick={enter}>
-        <div class="ct">SHADOW GAUNTLET</div>
+        <div class="ct">SPIRIT GAUNTLET</div>
         <div class="cr">WEEK {week.slice(-2)}<br /><span style={{ color: 'var(--ink2)', fontSize: '11px' }}>TROPHIES {p.trophies}</span></div>
-        <div class="cs">{fMode.name} · 4-SHADOW KNOCKOUT</div>
+        <div class="cs">{fMode.name} · 4-SPIRIT KNOCKOUT</div>
         {g ? (
           <div style={{ position: 'absolute', left: '20px', right: '20px', top: '92px' }}>
             <div class="pop" style={{ fontSize: '24px', letterSpacing: '.16em', marginBottom: '14px', color: g.placement === 1 ? COLORS.X : g.placement === 2 ? '#fff' : 'var(--ink)' }}>
@@ -69,14 +69,14 @@ export function Events() {
           </div>
         ) : (
           <div class="cs" style={{ top: '92px', width: '320px', lineHeight: '20px' }}>
-            YOUR SHADOW PLAYS IT FOR YOU<br />UNRATED · LOSSES BECOME COACHING
+            YOUR SPIRIT PLAYS IT FOR YOU<br />UNRATED · LOSSES BECOME COACHING
           </div>
         )}
         <div class="cx" style={{ color: g ? 'var(--ink)' : running ? '#fff' : canEnter ? COLORS.X : 'var(--ink2)' }}>
           {g ? `NEXT GAUNTLET IN ${fmtLeft(msUntilNextWeek())}`
-            : running ? 'YOUR SHADOW IS PLAYING…'
-            : canEnter ? 'ENTER YOUR SHADOW ›'
-            : `SHADOW LOCKED IN ${fMode.name} · ${gateProgress(shadow.peek(fMode.id)).moves}/${gateProgress(undefined).need}`}
+            : running ? 'YOUR SPIRIT IS PLAYING…'
+            : canEnter ? 'ENTER YOUR SPIRIT ›'
+            : `SPIRIT LOCKED IN ${fMode.name} · ${gateProgress(shadow.peek(fMode.id)).moves}/${gateProgress(undefined).need}`}
         </div>
       </button>
 

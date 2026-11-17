@@ -27,7 +27,7 @@ export function Ranks() {
         </button>
       </div>
       <div class="abs rk-head lbl2" style={{ top: '150px', fontSize: '11px' }}>
-        <div>#</div><div>SHADOW</div><div style={{ textAlign: 'right' }}>RATING</div>
+        <div>#</div><div>SPIRIT</div><div style={{ textAlign: 'right' }}>RATING</div>
       </div>
       <div class="abs rk" style={{ top: '172px' }} key={view}>
         {list.map((s, i) => (

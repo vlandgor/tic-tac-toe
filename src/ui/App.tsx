@@ -16,6 +16,7 @@ import { Training } from './overlays/Training';
 import { Summary } from './overlays/Summary';
 import { Away } from './overlays/Away';
 import { Dev } from './overlays/Dev';
+import { SpiritSheet } from './overlays/SpiritSheet';
 
 function Screen() {
   switch (screen.value) {
@@ -38,6 +39,7 @@ function Overlay() {
     case 'train': return <Training rules={o.rules} epoch={o.epoch} epochs={o.epochs} loss={o.loss} />;
     case 'summary': return <Summary data={o.data} />;
     case 'away': return <Away results={o.results} />;
+    case 'spirit': return <SpiritSheet />;
     case 'dev': return <Dev />;
   }
 }

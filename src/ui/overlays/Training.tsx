@@ -9,7 +9,7 @@ export function Training({ rules, epoch, epochs, loss }: { rules: RuleSet; epoch
   }, [epoch]);
   return (
     <div class="ov" style={{ zIndex: 50 }}>
-      <div class="abs center t-title">TRAINING SHADOW</div>
+      <div class="abs center t-title">TRAINING SPIRIT</div>
       <div class="hair" style={{ left: '50px', top: '446px', width: '320px', height: '2px' }} />
       <div class="abs t-bar" style={{ width: (320 * epoch) / epochs + 'px' }} />
       <div class="abs center t-meta">

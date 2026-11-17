@@ -84,7 +84,7 @@ export function ShadowScreen() {
           );
         }) : (
           <div class="lbl2" style={{ fontSize: '11px', lineHeight: '20px', marginTop: '8px' }}>
-            NOTHING YET<br />YOUR SHADOW PLAYS WHILE YOU'RE AWAY
+            NOTHING YET<br />YOUR SPIRIT PLAYS WHILE YOU'RE AWAY
           </div>
         )}
       </div>

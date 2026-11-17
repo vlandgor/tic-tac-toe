@@ -26,7 +26,7 @@ export function Search() {
   return (
     <div class="screen">
       <div class="abs center s-mode lbl">{r.name}&nbsp;&nbsp;·&nbsp;&nbsp;YOUR RATING {p.rating[r.id]}</div>
-      <div class="abs center s-title">{found ? 'SHADOW FOUND' : 'SEARCHING FOR SHADOWS'}</div>
+      <div class="abs center s-title">{found ? 'SPIRIT FOUND' : 'SEARCHING FOR SPIRITS'}</div>
       <div class="abs center s-dots">{found ? '· · ·' : '·  '.repeat(dots)}</div>
       <div class={'abs s-card' + (found ? ' on' : '')}>
         {found && <>

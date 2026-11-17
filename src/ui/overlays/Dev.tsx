@@ -28,18 +28,18 @@ export function Dev() {
 
       <div class="abs lbl2" style={{ left: '36px', top: '308px', fontSize: '11px' }}>DEVELOPER</div>
       <div class="abs d-list" style={{ top: '330px' }}>
-        <button onClick={() => { if (!simulateNow(5)) setMsg('NO SHADOW IS ACTIVE YET. PLAY MORE, OR TURN ON IGNORE SHADOW GATE.'); }}>
+        <button onClick={() => { if (!simulateNow(5)) setMsg('NO SPIRIT IS ACTIVE YET. PLAY MORE, OR TURN ON IGNORE SPIRIT GATE.'); }}>
           SIMULATE 5 AWAY MATCHES
         </button>
         <button class="d-row" onClick={() => { p.ignoreGate = !p.ignoreGate; commit(); }}>
-          <span>IGNORE SHADOW GATE</span>{onOff(p.ignoreGate)}
+          <span>IGNORE SPIRIT GATE</span>{onOff(p.ignoreGate)}
         </button>
         <button onClick={() => { resetRatings(); setMsg('RATINGS AND RIVAL POOL RESET'); }}>RESET RATINGS</button>
         <button onClick={() => { closeOverlay(); screen.value = 'onboarding'; }}>REPLAY ONBOARDING</button>
         <button style={armed ? { color: 'var(--orange)' } : undefined} onClick={() => {
           if (!armed) { setArmed(true); setTimeout(() => setArmed(false), 3000); return; }
-          setArmed(false); void resetShadow(); setMsg('SHADOW ERASED IN ALL MODES');
-        }}>{armed ? 'TAP AGAIN TO ERASE YOUR SHADOW' : 'RESET SHADOW (ALL MODES)'}</button>
+          setArmed(false); void resetShadow(); setMsg('SPIRIT ERASED IN ALL MODES');
+        }}>{armed ? 'TAP AGAIN TO ERASE YOUR SPIRIT' : 'RESET SPIRIT (ALL MODES)'}</button>
       </div>
       <div class="abs d-msg" style={{ top: '650px' }}>{msg}</div>
       <button class="tbtn" style={{ bottom: '96px' }} onClick={closeOverlay}>CLOSE</button>

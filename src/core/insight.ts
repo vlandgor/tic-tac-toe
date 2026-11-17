@@ -9,7 +9,7 @@ export function insight(h: Head, rules: RuleSet): string {
   if (k !== null && k >= 45) out.push(`FAVOURS CORNERS ${k}%`);
   if (bl !== null) out.push(bl >= 80 ? `BLOCKS THREATS ${bl}%` : `MISSES BLOCKS ${100 - bl}%`);
   if (f !== null && f < 90) out.push('LEAVES WINS ON THE BOARD');
-  if (!out.length) return `YOUR ${rules.name} SHADOW NEEDS MORE GAMES`;
+  if (!out.length) return `YOUR ${rules.name} SPIRIT NEEDS MORE GAMES`;
   return 'LEARNED — ' + out.slice(0, 2).join('  ·  ');
 }
 

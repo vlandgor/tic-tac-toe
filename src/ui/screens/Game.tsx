@@ -116,7 +116,7 @@ export function Game({ sess }: { sess: Session }) {
       sub: over ? `${r.name} VS ${agent.name}   ${cur.score.X} — ${cur.score.O}` : `${r.name} · SERIES ${cur.score.X} — ${cur.score.O}${how}`,
       rows,
       learned: isActive(r) ? insight(h, r)
-        : `SHADOW UNLOCKS FOR MATCHMAKING AT ${g.need} MOVES  ·  ${g.moves} / ${g.need}${g.needsStyle ? '  ·  NEEDS MORE CHOICE MOVES' : ''}`,
+        : `SPIRIT UNLOCKS FOR MATCHMAKING AT ${g.need} MOVES  ·  ${g.moves} / ${g.need}${g.needsStyle ? '  ·  NEEDS MORE CHOICE MOVES' : ''}`,
       primary: over
         ? { label: 'PLAY AGAIN', run: () => { closeOverlay(); if (rated) screen.value = 'search'; else startSession('mirror'); } }
         : { label: 'NEXT ROUND', run: () => { closeOverlay(); style.current = { hits: 0, moves: 0 }; setM(startRound(mRef.current)); } },

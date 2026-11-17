@@ -35,13 +35,13 @@ export function Coach({ items, resolve }: { items: CoachItem[]; resolve: (r: Coa
   const same = answer === it.ref;
   const shown = answer >= 0 ? it.rules.apply(it.s, answer, 'X') : it.s;
   const fb = answer < 0 ? '' : it.kind === 'loss'
-    ? (same ? 'SAME MOVE AS YOUR SHADOW' : 'YOUR SHADOW PLAYED HERE')
-    : (same ? 'YOUR SHADOW GUESSED IT' : 'YOUR SHADOW EXPECTED THIS');
+    ? (same ? 'SAME MOVE AS YOUR SPIRIT' : 'YOUR SPIRIT PLAYED HERE')
+    : (same ? 'YOUR SPIRIT GUESSED IT' : 'YOUR SPIRIT EXPECTED THIS');
   const fbColor = same ? (it.kind === 'loss' ? '#fff' : COLORS.X) : COLORS.O;
 
   return (
     <div class="ov" style={{ zIndex: 45 }}>
-      <div class="abs center c-top">{it.kind === 'loss' ? 'YOUR SHADOW LOST FROM HERE' : it.kind === 'daily' ? 'DAILY PUZZLE' : 'COACH YOUR SHADOW'}</div>
+      <div class="abs center c-top">{it.kind === 'loss' ? 'YOUR SPIRIT LOST FROM HERE' : it.kind === 'daily' ? 'DAILY PUZZLE' : 'COACH YOUR SPIRIT'}</div>
       <div class="abs center c-q">WHAT WOULD YOU PLAY?</div>
       <div class="abs center c-count lbl2">{it.rules.name}&nbsp;&nbsp;·&nbsp;&nbsp;{k + 1} / {items.length}</div>
       <Board key={k} rules={it.rules} s={shown} cell={90} mark={52} overhang={7}
@@ -50,8 +50,8 @@ export function Coach({ items, resolve }: { items: CoachItem[]; resolve: (r: Coa
       <div class="abs center c-fb swap" key={answer + '-' + k} style={{ color: fbColor }}>{fb}</div>
       <div class="abs c-why">
         {it.kind === 'loss' ? 'IT WAS PLAYING AS YOU AND LOST THE ROUND'
-          : it.kind === 'daily' ? 'ONE POSITION A DAY · IT TRAINS YOUR SHADOW'
-          : 'YOUR SHADOW IS UNSURE ABOUT YOU HERE'}
+          : it.kind === 'daily' ? 'ONE POSITION A DAY · IT TRAINS YOUR SPIRIT'
+          : 'YOUR SPIRIT IS UNSURE ABOUT YOU HERE'}
         <br />YOU ARE ORANGE · YOUR MOVE
       </div>
       <button class="tbtn" style={{ bottom: '110px', fontSize: '14px' }} onClick={() => finish()}>SKIP</button>

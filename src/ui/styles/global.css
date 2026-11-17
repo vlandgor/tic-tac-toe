@@ -64,8 +64,9 @@ svg.doom { opacity: .3; }
 .tbtn { position: absolute; left: 0; right: 0; text-align: center; height: 52px; font-size: 15px; letter-spacing: .18em; color: var(--ink); }
 
 /* ---------------- MENU ---------------- */
-.m-name { left: 28px; top: 42px; font-size: 20px; letter-spacing: .16em; }
-.m-status { left: 28px; top: 72px; }
+.m-avatar { left: 24px; top: 40px; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; background: none; border: 0; padding: 0; }
+.m-name { left: 74px; top: 42px; font-size: 20px; letter-spacing: .16em; }
+.m-status { left: 74px; top: 72px; }
 .m-gear { right: 20px; top: 40px; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; opacity: .75; }
 .m-title { top: 140px; font-size: 48px; letter-spacing: .08em; line-height: 52px; }
 .m-rule { left: 50%; transform: translateX(-50%); top: 212px; width: 100px; }
@@ -224,6 +225,31 @@ svg.doom { opacity: .3; }
 .ob-verbs div { padding: 18px 0; border-bottom: 1px solid var(--hair); display: flex; flex-direction: column; gap: 9px; }
 .ob-verbs b { font-weight: 400; font-size: 18px; letter-spacing: .24em; color: var(--orange); }
 .ob-verbs span { font-size: 12px; letter-spacing: .12em; color: var(--ink); }
+
+/* spirit picker: 4 x 2 grid of animal avatars */
+.sp-grid { left: 46px; top: 230px; width: 328px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.sp-cell { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px;
+           height: 86px; background: none; border: 1px solid var(--hair); border-radius: 2px; padding: 0;
+           transition: border-color .16s ease, background .16s ease; }
+.sp-cell span { font-size: 9px; letter-spacing: .1em; }
+.sp-cell.on { border-color: var(--orange); background: rgba(255, 90, 30, .07); }
+
+/* ---------------- BOTTOM SHEETS ---------------- */
+.sheet-wrap { position: absolute; inset: 0; z-index: 40; }
+.sheet-scrim { position: absolute; inset: 0; background: rgba(0, 0, 0, .66); }
+.sheet { position: absolute; left: 0; right: 0; bottom: 0; background: #0a0a0a; border-top: 1px solid var(--hair);
+         padding: 14px 24px 30px; display: flex; flex-direction: column; }
+.sheet-grab { width: 42px; height: 3px; border-radius: 2px; background: rgba(255, 255, 255, .22); margin: 0 auto 18px; }
+.sheet-title { font-size: 17px; letter-spacing: .22em; text-align: center; }
+.sheet-sub { text-align: center; margin-top: 10px; font-size: 10px; }
+.sp-grid-sheet { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-top: 22px; }
+.sheet-rows { margin-top: 20px; display: flex; flex-direction: column; }
+.sheet-row { display: flex; align-items: center; gap: 14px; padding: 16px 4px; border-top: 1px solid var(--hair);
+             background: none; border-left: 0; border-right: 0; border-bottom: 0; text-align: left; width: 100%; }
+.sheet-row .nm { font-size: 16px; letter-spacing: .2em; }
+.sheet-row .bl { font-size: 10px; letter-spacing: .12em; color: var(--ink2); margin-top: 7px; }
+.sheet-row.on .nm { color: var(--orange); }
+.sheet-row .tick { margin-left: auto; color: var(--orange); font-size: 14px; }
 
 /* ---------------- SETTINGS ---------------- */
 .d-list .d-row { display: flex; justify-content: space-between; align-items: center; }
