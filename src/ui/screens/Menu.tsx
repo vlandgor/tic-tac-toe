@@ -10,7 +10,6 @@ export function Menu() {
 
   return (
     <div class="screen">
-      <div class="abs center m-title"><span class="o">TIC</span> <span class="b">TAC</span> <span class="o">TOE</span></div>
       <div class="hair m-rule" />
       <div class="abs center m-score">
         <span class="o">YOU</span> <span class="n">{p.mini.w}</span>&nbsp;&nbsp;·&nbsp;&nbsp;DRAW <span class="n">{p.mini.d}</span>

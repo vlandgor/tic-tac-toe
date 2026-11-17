@@ -73,13 +73,15 @@ svg.doom { opacity: .3; }
           border-bottom: 1px solid var(--hair); z-index: 5; }
 .topbar .av { position: absolute; left: 20px; top: 15px; width: 34px; height: 34px; padding: 0;
               background: none; border: 0; display: flex; align-items: center; justify-content: center; }
-.topbar .nm { position: absolute; left: 62px; top: 14px; font-size: 17px; letter-spacing: .16em; }
-.topbar .st { position: absolute; left: 62px; top: 39px; font-size: 10px; letter-spacing: .2em; color: var(--ink2); }
+.topbar .nm { position: absolute; left: 60px; top: 50%; transform: translateY(-50%); font-size: 13px;
+               letter-spacing: .14em; max-width: 80px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+/* centred on the whole bar, so it stays centred whatever the name's length */
+.topbar .ttl { position: absolute; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+               text-align: center; font-size: 14px; letter-spacing: .14em; pointer-events: none; }
 .topbar .gear { position: absolute; right: 16px; top: 15px; width: 34px; height: 34px; padding: 0;
                 background: none; border: 0; display: flex; align-items: center; justify-content: center; opacity: .75; }
-.m-title { top: 140px; font-size: 48px; letter-spacing: .08em; line-height: 52px; }
-.m-rule { left: 50%; transform: translateX(-50%); top: 212px; width: 100px; }
-.m-score { top: 230px; font-size: 14px; letter-spacing: .14em; color: var(--ink); }
+.m-rule { left: 50%; transform: translateX(-50%); top: 138px; width: 100px; }
+.m-score { top: 156px; font-size: 14px; letter-spacing: .14em; color: var(--ink); }
 .m-score .n { color: #fff; }
 .m-stats { left: 36px; top: 482px; width: 348px; height: 64px; display: grid; grid-template-columns: repeat(3, 1fr); }
 .m-stats .st { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 10px; }

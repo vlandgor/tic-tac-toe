@@ -56,7 +56,7 @@ export function MiniBoard({ rules }: { rules: RuleSet }) {
   const tap = (i: number) => { if (!term && turn === 'X' && !s.cells[i]) place(s, i, 'X'); };
 
   return (
-    <Board rules={rules} s={s} cell={62} mark={34} overhang={6} left={117} top={272}
+    <Board rules={rules} s={s} cell={62} mark={34} overhang={6} left={117} top={212}
            lineColor="rgba(255,255,255,.32)" lineWidth={1} newIdx={last} terminal={term} fadeLosers onTap={tap} />
   );
 }
