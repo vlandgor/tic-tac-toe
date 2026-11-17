@@ -82,7 +82,9 @@ svg.doom { opacity: .3; }
                 background: none; border: 0; display: flex; align-items: center; justify-content: center; opacity: .75; }
 /* ---- Play screen: three blocks on a 28px gutter, same edges as the Events cards ---- */
 .pb { left: 28px; width: 364px; border: 1px solid var(--hair); background: none; padding: 0; text-align: left; }
-.pb.hot { border-color: var(--orange); }
+/* the daily puzzle is the one framed block: a heavier orange edge, muted once solved */
+.pb.hot { border: 2px solid var(--orange); }
+.pb-daily { border: 2px solid rgba(255, 90, 30, .45); }
 
 /* 1 — daily puzzle */
 .pb-daily { top: 80px; height: 80px; }
@@ -94,7 +96,8 @@ svg.doom { opacity: .3; }
 .pd-streak span { color: #fff; }
 
 /* 2 — selected mode */
-.pb-mode { top: 176px; height: 440px; pointer-events: none; }
+/* grouped by spacing only, no frame */
+.pb-mode { top: 176px; height: 440px; pointer-events: none; border: 0; }
 .pm-name { top: 196px; font-size: 20px; letter-spacing: .26em; text-indent: .26em; background: none; border: 0; }
 .pm-blurb { top: 228px; font-size: 10px; letter-spacing: .16em; color: var(--ink2); }
 .pm-score { top: 258px; font-size: 12px; letter-spacing: .14em; color: var(--ink2); }
@@ -105,7 +108,7 @@ svg.doom { opacity: .3; }
 .pm-stats .lbl2 { font-size: 10px; letter-spacing: .18em; }
 
 /* 3 — play */
-.m-playrow { left: 28px; top: 634px; width: 364px; height: 70px; display: flex; gap: 10px; }
+.m-playrow { left: 28px; top: 664px; width: 364px; height: 70px; display: flex; gap: 10px; }
 .m-sq { width: 70px; height: 70px; background: none; border: 1px solid var(--hair); padding: 0;
         display: flex; align-items: center; justify-content: center; }
 .m-sq:active { background: rgba(255, 255, 255, .06); }
@@ -114,7 +117,7 @@ svg.doom { opacity: .3; }
 .m-play:active { background: var(--orange-dk); }
 
 /* quiet footer */
-.pf-note { top: 738px; font-size: 10px; letter-spacing: .16em; color: var(--ink2); }
+.pf-note { top: 762px; font-size: 10px; letter-spacing: .16em; color: var(--ink2); }
 .nav { position: absolute; left: 0; right: 0; bottom: 0; height: 84px; display: grid; grid-template-columns: repeat(5, 1fr); align-items: center; border-top: 1px solid var(--hair); }
 .nav { background: #000; z-index: 5; }
 .tab { height: 84px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 8px; position: relative; }
